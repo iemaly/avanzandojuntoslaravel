@@ -13,8 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('professionals', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('carehome_id')->nullable();
+            $table->foreign('carehome_id')->references('id')->on('care_homes')->onDelete('cascade');
+            $table->enum('type', ['RN', 'CNA', 'HHA', 'Amade Ilave', 'Nutricionista', 'Trabajadora Social'])->nullable();
             $table->string('fname');
             $table->string('lname');
             $table->string('email')->unique();
@@ -35,6 +38,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('professionals');
     }
 };
