@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'user',
         'passwords' => 'users',
     ],
 
@@ -36,9 +36,45 @@ return [
     */
 
     'guards' => [
-        'web' => [
+        'user' => [
             'driver' => 'session',
             'provider' => 'users',
+        ],
+        'user_api' => [
+            'driver' => 'passport',
+            'provider' => 'users',
+        ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admin',
+        ],
+        'admin_api' => [
+            'driver' => 'passport',
+            'provider' => 'admin',
+        ],
+        'subadmin' => [
+            'driver' => 'session',
+            'provider' => 'subadmin',
+        ],
+        'subadmin_api' => [
+            'driver' => 'passport',
+            'provider' => 'subadmin',
+        ],
+        'professional' => [
+            'driver' => 'session',
+            'provider' => 'professional',
+        ],
+        'professional_api' => [
+            'driver' => 'passport',
+            'provider' => 'professional',
+        ],
+        'business' => [
+            'driver' => 'session',
+            'provider' => 'business',
+        ],
+        'business_api' => [
+            'driver' => 'passport',
+            'provider' => 'business',
         ],
     ],
 
@@ -63,6 +99,22 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'admin' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
+        ],
+        'subadmin' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Subadmin::class,
+        ],
+        'professional' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Professional::class,
+        ],
+        'business' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Business::class,
         ],
 
         // 'users' => [

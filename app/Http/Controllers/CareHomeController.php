@@ -2,85 +2,68 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
+use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreCareHomeRequest;
 use App\Http\Requests\UpdateCareHomeRequest;
 use App\Models\CareHome;
 
 class CareHomeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    function index()
     {
-        //
+        $carehomes = CareHome::all();
+        return response()->json(['status'=>true, 'data'=>$carehomes]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    function store(StoreCareHomeRequest $request)
     {
-        //
+        $request = $request->validated();
+        
+        try {
+            if (!empty($request['image'])) 
+            {
+                $imageName = $request['image']->getClientOriginalName().'.'.$request['image']->extension();
+                $request['image']->move(public_path('uploads/carehome/images'), $imageName);
+                $request['image']=$imageName;
+            }
+            $carehome = CareHome::create($request);
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$carehome]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreCareHomeRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreCareHomeRequest $request)
+    function update(UpdateCareHomeRequest $request, $carehome)
     {
-        //
+        $request = $request->validated();
+        
+        try {
+            $carehome = CareHome::find($carehome);
+            $carehome->update($request);
+            return response()->json(['status'=>true, 'response'=>'Record Updated', 'data'=>$carehome]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\CareHome  $careHome
-     * @return \Illuminate\Http\Response
-     */
-    public function show(CareHome $careHome)
+    function show($carehome)
     {
-        //
+        $carehome = Carehome::find($carehome);
+        return response()->json(['status'=>true, 'data'=>$carehome]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\CareHome  $careHome
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(CareHome $careHome)
+    function destroy($carehome)
     {
-        //
+        return CareHome::destroy($carehome);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateCareHomeRequest  $request
-     * @param  \App\Models\CareHome  $careHome
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateCareHomeRequest $request, CareHome $careHome)
+    function bulk()
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\CareHome  $careHome
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(CareHome $careHome)
-    {
-        //
+        $response = (new Carehome())->import(request()->sheet);
+        return response()->json(['status'=>$response['status'], 'message'=>$response['status']===true?"Sheet Imported":$response['error']]);
     }
 }

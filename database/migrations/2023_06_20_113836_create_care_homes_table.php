@@ -20,10 +20,11 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->string('town')->nullable();
             $table->string('telephone')->nullable();
-            $table->string('email')->nullable();
+            $table->string('email')->unique()->nullable();
             $table->string('license')->nullable();
             $table->string('license_status')->nullable();
             $table->string('ability')->nullable();
+            $table->string('image')->nullable();
             $table->tinyInteger('status')->default(1)->nullable();
             $table->timestamps();
         });

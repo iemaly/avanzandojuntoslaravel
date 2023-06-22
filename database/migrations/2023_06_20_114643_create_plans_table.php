@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('type', ['Professional', 'Business', 'User'])->nullable();
             $table->string('title')->nullable();
             $table->string('description')->nullable();
+            $table->string('coupon')->nullable();
             $table->bigInteger('duration')->nullable();
             $table->timestamps();
         });
