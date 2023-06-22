@@ -16,9 +16,11 @@ return new class extends Migration
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
             $table->enum('type', ['Professional', 'Business', 'User'])->nullable();
+            $table->enum('professional_type', ['RN', 'CNA', 'HHA', 'Amade Ilave', 'Nutricionista', 'Trabajadora Social'])->nullable();
             $table->string('title')->nullable();
             $table->string('description')->nullable();
             $table->string('coupon')->nullable();
+            $table->string('coupon_discount')->nullable();
             $table->bigInteger('duration')->nullable();
             $table->timestamps();
         });

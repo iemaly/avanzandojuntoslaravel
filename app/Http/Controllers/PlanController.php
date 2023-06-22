@@ -8,79 +8,45 @@ use App\Models\Plan;
 
 class PlanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    function index()
     {
-        //
+        $plans = Plan::all();
+        return response()->json(['status'=>true, 'data'=>$plans]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    function store(StorePlanRequest $request)
     {
-        //
+        $request = $request->validated();
+        
+        try {
+            $plan = Plan::create($request);
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$plan]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StorePlanRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StorePlanRequest $request)
+    function update(UpdatePlanRequest $request, $plan)
     {
-        //
+        $request = $request->validated();
+        
+        try {
+            $plan = Plan::find($plan);
+            $plan->update($request);
+            return response()->json(['status'=>true, 'response'=>'Record Updated', 'data'=>$plan]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Plan  $plan
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Plan $plan)
+    function show($plan)
     {
-        //
+        $plan = Plan::find($plan);
+        return response()->json(['status'=>true, 'data'=>$plan]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Plan  $plan
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Plan $plan)
+    function destroy($plan)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdatePlanRequest  $request
-     * @param  \App\Models\Plan  $plan
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdatePlanRequest $request, Plan $plan)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Plan  $plan
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Plan $plan)
-    {
-        //
+        return Plan::destroy($plan);
     }
 }

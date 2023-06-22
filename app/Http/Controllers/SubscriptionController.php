@@ -34,9 +34,33 @@ class SubscriptionController extends Controller
      * @param  \App\Http\Requests\StoreSubscriptionRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreSubscriptionRequest $request)
+    function store(StoreSubscriptionRequest $request)
     {
-        //
+        $request = $request->validated();
+        
+        try {
+            switch ($request['type']) 
+            {
+                case 'business':
+                    $request['creatable_id'] = $request['id'];
+                    $request['creatable_type'] = "App\Models\Business";
+                    break;
+                case 'professional':
+                    $request['creatable_id'] = $request['id'];
+                    $request['creatable_type'] = "App\Models\Professional";
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+
+            $subscription['payment_link'] = (new Subscription())->stripePay($request);
+            // $subscription = Subscription::create($request);
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$subscription]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
     }
 
     /**

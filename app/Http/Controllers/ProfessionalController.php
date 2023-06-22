@@ -8,79 +8,52 @@ use App\Models\Professional;
 
 class ProfessionalController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    function index()
     {
-        //
+        $professionals = Professional::all();
+        return response()->json(['status'=>true, 'data'=>$professionals]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    function store(StoreProfessionalRequest $request)
     {
-        //
+        $request = $request->validated();
+        
+        try {
+            $request['password'] = bcrypt($request['password']);
+            if (!empty($request['image'])) 
+            {
+                $imageName = $request['image']->getClientOriginalName().'.'.$request['image']->extension();
+                $request['image']->move(public_path('uploads/professional/images'), $imageName);
+                $request['image']=$imageName;
+            }
+            $professional = Professional::create($request);
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$professional]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreProfessionalRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreProfessionalRequest $request)
+    function update(UpdateProfessionalRequest $request, $professional)
     {
-        //
+        $request = $request->validated();
+        
+        try {
+            $professional = Professional::find($professional);
+            $professional->update($request);
+            return response()->json(['status'=>true, 'response'=>'Record Updated', 'data'=>$professional]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Professional  $professional
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Professional $professional)
+    function show($professional)
     {
-        //
+        $professional = Professional::find($professional);
+        return response()->json(['status'=>true, 'data'=>$professional]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Professional  $professional
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Professional $professional)
+    function destroy($professional)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateProfessionalRequest  $request
-     * @param  \App\Models\Professional  $professional
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateProfessionalRequest $request, Professional $professional)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Professional  $professional
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Professional $professional)
-    {
-        //
+        return Professional::destroy($professional);
     }
 }
