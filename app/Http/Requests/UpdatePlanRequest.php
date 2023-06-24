@@ -45,6 +45,7 @@ class UpdatePlanRequest extends FormRequest
             'coupon_discount' => 'nullable',
             'coupon' => 'nullable',
             'duration' => 'nullable',
+            'price' => 'nullable',
         ];
     }
 }

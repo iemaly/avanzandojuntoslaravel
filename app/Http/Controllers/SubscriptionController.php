@@ -39,24 +39,7 @@ class SubscriptionController extends Controller
         $request = $request->validated();
         
         try {
-            switch ($request['type']) 
-            {
-                case 'business':
-                    $request['creatable_id'] = $request['id'];
-                    $request['creatable_type'] = "App\Models\Business";
-                    break;
-                case 'professional':
-                    $request['creatable_id'] = $request['id'];
-                    $request['creatable_type'] = "App\Models\Professional";
-                    break;
-                
-                default:
-                    # code...
-                    break;
-            }
-
-            $subscription['payment_link'] = (new Subscription())->stripePay($request);
-            // $subscription = Subscription::create($request);
+            $subscription = (new Subscription())->stripePay($request);
             return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$subscription]);
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
@@ -106,5 +89,11 @@ class SubscriptionController extends Controller
     public function destroy(Subscription $subscription)
     {
         //
+    }
+
+    function deleteEmpty()
+    {
+        Subscription::where('creatable_id', (NULL))->delete();
+        return redirect('https://avanzandojuntos.dev-bt.xyz/cancel');
     }
 }

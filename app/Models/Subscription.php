@@ -13,6 +13,8 @@ class Subscription extends Model
     
     function stripePay($data)
     {
+        $uniqueCode = uniqid();
+        $data['uniqueCode'] = $uniqueCode;
         $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
         $checkout_session = $stripe->checkout->sessions->create([
         'line_items' => [[
@@ -23,23 +25,41 @@ class Subscription extends Model
             ],
             'unit_amount' => $this->amount($data)*100,
             ],
-            'quantity' => $data['total_quantity'],
-            // 'quantity' => 1,
+            'quantity' => 1,
         ]],
         'metadata' => [
-            'order_id' => $data['order_id'],
+            // 'order_id' => $data['order_id'],
         ],
-        'customer_email'=>$data['user_email'],
+        'customer_email'=>'hnhtechsolutions@gmail.com',
         'mode' => 'payment',
-        'success_url' => route('users.orders.update_status', ['code'=>$data['code']]),
-        'cancel_url' => 'https://daraz.dev-bt.xyz',
+        'success_url' => route('professional.store', ['data'=>$data]),
+        'cancel_url' => route('subscriptions.delete'),
         ]);
-        Order::find($data['order_id'])->update(['payment_id'=>$checkout_session->payment_intent]);
+        Subscription::create(['creatable_type'=>'App\Models\Professional', 'plan_id'=>$data['plan_id'], 'code'=>$uniqueCode, 'payment_id'=>$checkout_session->payment_intent]);
         return $checkout_session->url;
     }
 
     function amount($data)
     {
-        return 10;
+        $amount = Plan::find($data['plan_id'])->price;
+        if (!empty($data['coupon'])) 
+        {
+            $plan = Plan::where('coupon', $data['coupon'])->first();
+            if($plan!=null) 
+            {
+                $discountedAmount = $plan->price * ($plan->coupon_discount/100);
+                return $amount = $plan->price - $discountedAmount;
+            }
+            return $amount;
+        }
+        return $amount;
+    }
+
+    function store($data)
+    {
+        $subscription = Subscription::where(['creatable_type'=>'App\Models\Professional', 'creatable_id'=>$data['data']['professional_id']])->first();
+        if($subscription!=null) return ['status'=>false, 'error'=>'Subscription already exists'];
+        Subscription::where('code', $data['data']['uniqueCode'])->update(['creatable_type'=>'App\Models\Professional', 'creatable_id'=>$data['data']['professional_id']]);
+        return ['status'=>true];
     }
 }

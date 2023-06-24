@@ -41,4 +41,11 @@ class Professional extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // RELATION
+
+    public function carehome()
+    {
+        return $this->belongsTo(CareHome::class, 'carehome_id', 'id');
+    }
 }

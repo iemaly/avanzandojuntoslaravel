@@ -15,6 +15,10 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
     
     // PLAN
     Route::resource('plans', 'App\Http\Controllers\PlanController');
+
+    // PROFESSIONAL
+    Route::resource('professionals', 'App\Http\Controllers\ProfessionalController');
+    Route::post('professional/activate/{professional}', [App\Http\Controllers\ProfessionalController::class, 'activate']);
 });
 
 // CAREHOME
@@ -26,5 +30,9 @@ Route::get('plans', [App\Http\Controllers\PlanController::class, 'index']);
 Route::get('plans/{id}', [App\Http\Controllers\PlanController::class, 'show']);
 
 // PROFESSIONAL
-Route::resource('professionals', 'App\Http\Controllers\ProfessionalController');
+// Route::resource('professionals', 'App\Http\Controllers\ProfessionalController');
+Route::get('professional', [App\Http\Controllers\ProfessionalController::class, 'storeByGet'])->name('professional.store');
+
+// SUBSCRIPTION
 Route::resource('subscriptions', 'App\Http\Controllers\SubscriptionController');
+Route::get('subscription/delete_empty', [App\Http\Controllers\SubscriptionController::class, 'deleteEmpty'])->name('subscriptions.delete');

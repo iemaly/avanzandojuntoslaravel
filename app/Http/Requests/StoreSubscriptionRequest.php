@@ -37,9 +37,10 @@ class StoreSubscriptionRequest extends FormRequest
     public function rules()
     {
         return [
+            'professional' => 'nullable',
             'coupon' => 'nullable',
             'type' => 'nullable',
-            'id' => 'nullable',
+            // 'id' => 'nullable',
             'plan_id' => 'nullable',
         ];
     }

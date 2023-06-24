@@ -15,10 +15,12 @@ return new class extends Migration
     {
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
-            $table->morphs('creatable');
+            $table->nullableMorphs('creatable');
             $table->unsignedBigInteger('plan_id')->nullable();
             $table->foreign('plan_id')->references('id')->on('plans')->onDelete('cascade');
-            $table->tinyInteger('status')->default(1)->nullable(); 
+            $table->string('payment_id')->nullable();
+            $table->string('code')->nullable();
+            $table->tinyInteger('status')->default(1)->nullable();
             $table->timestamps();
         });
     }

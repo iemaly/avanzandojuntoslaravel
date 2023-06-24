@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('coupon')->nullable();
             $table->string('coupon_discount')->nullable();
             $table->bigInteger('duration')->nullable();
+            $table->double('price')->nullable();
             $table->timestamps();
         });
     }
