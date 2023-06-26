@@ -36,7 +36,21 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        //
+        $request = $request->validated();
+        
+        try {
+            $request['password'] = bcrypt($request['password']);
+            if (!empty($request['image'])) 
+            {
+                $imageName = $request['image']->getClientOriginalName().'.'.$request['image']->extension();
+                $request['image']->move(public_path('uploads/user/images'), $imageName);
+                $request['image']=$imageName;
+            }
+            $user = User::create($request);
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$user]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSubscriptionRequest;
 use App\Http\Requests\UpdateSubscriptionRequest;
 use App\Models\Subscription;
+use App\Http\Requests\StoreSubscriptionForUser;
 
 class SubscriptionController extends Controller
 {
@@ -44,6 +45,24 @@ class SubscriptionController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
         }
+    }
+
+    function storeForUser(StoreSubscriptionForUser $request)
+    {
+        $request = $request->validated();
+        
+        try {
+            $subscription = (new Subscription())->stripePayUser($request);
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$subscription]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
+    }
+
+    function afterPayForUser()
+    {
+        (new Subscription)->afteryPayUser(request()->all());
+        return redirect('https://avanzandojuntos.dev-bt.xyz/success');
     }
 
     /**

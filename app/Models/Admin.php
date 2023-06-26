@@ -50,8 +50,8 @@ class Admin extends Authenticatable
     {
         $admin = $this->whereEmail($email)->exists();
         if($admin) return ['status'=>true, 'role'=>'admin'];
-        $subadmin =  Subadmin::whereEmail($email)->exists();
-        if($subadmin) return ['status'=>true, 'role'=>'subadmin'];
+        $professional =  Professional::whereEmail($email)->exists();
+        if($professional) return ['status'=>true, 'role'=>'professional'];
         $user =  User::where('email',$email)->exists();
         if($user) return ['status'=>true, 'role'=>'user'];
         return false;

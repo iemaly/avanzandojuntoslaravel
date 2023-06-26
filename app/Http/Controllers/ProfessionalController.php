@@ -79,13 +79,18 @@ class ProfessionalController extends Controller
     {
         $professional = Professional::find($professional);
         $professional->update(['status'=>1]);
-        $link = 'https://avanzandojuntos.dev-bt.xyz/nurse/login';
 
-        Mail::raw("abc", function ($message) use ($professional) 
+        Mail::raw("https://avanzandojuntos.dev-bt.xyz/nurse/login", function ($message) use ($professional) 
         {
             $message->to($professional->email)->subject('Account Approved');
             $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
         });
         return response()->json(['status'=>true, 'response'=>"Account approved and mail sent to professional"]);
+    }
+
+    function proFessionalByEmail()
+    {
+        if(empty(request()->email)) return response(['status'=>false, 'error'=>'Email is required']);
+        return Professional::whereEmail(request()->email)->exists();
     }
 }
