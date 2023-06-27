@@ -6,6 +6,7 @@ use App\Imports\ImportCarehome;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class CareHome extends Model
 {
@@ -21,4 +22,12 @@ class CareHome extends Model
         }
         return ['status'=>true];
     }
+
+    // ACCESSOR
+        protected function image(): Attribute
+        {
+            return Attribute::make(
+                fn ($value) => !empty($value)?asset('uploads/carehome/images/'.$value):'',
+            );
+        }
 }
