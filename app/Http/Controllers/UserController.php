@@ -13,9 +13,16 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    function index()
     {
-        //
+        $users = User::get();
+        return response()->json(['status'=>true, 'data'=>$users]);
+    }
+
+    function show($user)
+    {
+        $user = User::find($user);
+        return response()->json(['status'=>true, 'data'=>$user]);
     }
 
     /**
@@ -59,10 +66,6 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.

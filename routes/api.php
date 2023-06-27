@@ -19,6 +19,9 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
     // PROFESSIONAL
     Route::resource('professionals', 'App\Http\Controllers\ProfessionalController');
     Route::post('professional/activate/{professional}', [App\Http\Controllers\ProfessionalController::class, 'activate']);
+
+    // USER
+    Route::resource('users', 'App\Http\Controllers\UserController');
 });
 
 // CAREHOME
