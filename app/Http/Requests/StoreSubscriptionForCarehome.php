@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Elegant\Sanitizer\Laravel\SanitizesInput;
 
-class StoreCareHomeRequest extends FormRequest
+class StoreSubscriptionForCarehome extends FormRequest
 {
     use SanitizesInput;
     
@@ -37,18 +37,10 @@ class StoreCareHomeRequest extends FormRequest
     public function rules()
     {
         return [
-            'establishment' => 'nullable',
-            'director' => 'nullable',
-            'address' => 'nullable',
-            'town' => 'nullable',
-            'telephone' => 'nullable',
-            'email' => 'nullable|email|unique:care_homes,email',
-            'license' => 'nullable',
-            'license_status' => 'nullable',
-            'ability' => 'nullable',
-            'image' => 'nullable',
-            'password' => 'nullable',
-            'pricing' => 'nullable',
+            'carehome' => 'nullable',
+            'coupon' => 'nullable',
+            'type' => 'nullable',
+            'plan_id' => 'nullable',
         ];
     }
 }

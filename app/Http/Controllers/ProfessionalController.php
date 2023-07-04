@@ -45,7 +45,6 @@ class ProfessionalController extends Controller
             $request['data']['professional_id'] = $professional->id;
             $subscription = (new Subscription)->store($request);
             return redirect('https://avanzandojuntos.dev-bt.xyz/success');
-            // return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$professional]);
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
         }

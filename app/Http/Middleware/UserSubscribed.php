@@ -17,7 +17,7 @@ class UserSubscribed
      */
     public function handle(Request $request, Closure $next)
     {
-        $subscriptionExists = Subscription::where(['creatable_type'=>'App\Models\User', 'creatable_id'=>request()->user_id])->exists();
+        $subscriptionExists = Subscription::where(['creatable_type'=>'App\Models\User', 'creatable_id'=>auth('user_api')->id()])->exists();
         if(!$subscriptionExists) return response()->json(['status'=>false, 'error'=>'Buy subscription first']);
         return $next($request);
     }

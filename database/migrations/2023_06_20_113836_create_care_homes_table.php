@@ -25,7 +25,9 @@ return new class extends Migration
             $table->string('license_status')->nullable();
             $table->string('ability')->nullable();
             $table->string('image')->nullable();
-            $table->tinyInteger('status')->default(1)->nullable();
+            $table->string('password')->nullable();
+            $table->double('pricing')->nullable();
+            $table->tinyInteger('status')->default(0)->nullable();
             $table->timestamps();
         });
     }

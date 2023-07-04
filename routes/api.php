@@ -25,16 +25,17 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
 });
 
 // CAREHOME
+Route::post('carehomes/subscribe', [App\Http\Controllers\SubscriptionController::class, 'storeForCarehome']);
+Route::get('carehome/store', [App\Http\Controllers\CareHomeController::class, 'storeByGet'])->name('carehome.storeByGet');
 Route::get('carehomes', [App\Http\Controllers\CareHomeController::class, 'index']);
 Route::get('carehomes/{id}', [App\Http\Controllers\CareHomeController::class, 'show']);
+Route::post('find_by_email', [App\Http\Controllers\CareHomeController::class, 'findByEmail']);
 
 // PLANS
 Route::get('plans', [App\Http\Controllers\PlanController::class, 'index']);
 Route::get('plans/{id}', [App\Http\Controllers\PlanController::class, 'show']);
 
 // PROFESSIONAL
-// Route::get('professionals/{show}', [App\Http\Controllers\ProfessionalController::class, 'show'])->name('professionals.show');
-// Route::get('professionals', [App\Http\Controllers\ProfessionalController::class, 'index'])->name('professionals.index');
 Route::get('professional', [App\Http\Controllers\ProfessionalController::class, 'storeByGet'])->name('professional.store');
 Route::post('professional_by_email', [App\Http\Controllers\ProfessionalController::class, 'proFessionalByEmail'])->name('professional.byEmail');
 

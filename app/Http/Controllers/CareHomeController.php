@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserRequest;
-use App\Models\User;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreCareHomeRequest;
 use App\Http\Requests\UpdateCareHomeRequest;
 use App\Models\CareHome;
+use App\Models\Subscription;
+use Illuminate\Support\Facades\Mail;
 
 class CareHomeController extends Controller
 {
@@ -24,6 +21,7 @@ class CareHomeController extends Controller
         $request = $request->validated();
         
         try {
+            $request['password'] = bcrypt($request['password']);
             if (!empty($request['image'])) 
             {
                 $imageName = $request['image']->getClientOriginalName().'.'.$request['image']->extension();
@@ -32,6 +30,21 @@ class CareHomeController extends Controller
             }
             $carehome = CareHome::create($request);
             return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$carehome]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
+    }
+
+    function storeByGet()
+    {   
+        $request = request()->all();
+        $carehome = json_decode($request['data']['carehome']);
+        try {
+            $carehome->password = bcrypt($carehome->password);
+            $carehome = CareHome::create((array) $carehome);
+            $request['data']['carehome_id'] = $carehome->id;
+            $subscription = (new Subscription())->afterPayCarehome($request);
+            return redirect('https://avanzandojuntos.dev-bt.xyz/success');
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
         }
@@ -65,5 +78,24 @@ class CareHomeController extends Controller
     {
         $response = (new Carehome())->import(request()->sheet);
         return response()->json(['status'=>$response['status'], 'message'=>$response['status']===true?"Sheet Imported":$response['error']]);
+    }
+
+    function activate($carehome)
+    {
+        $carehome = CareHome::find($carehome);
+        $carehome->update(['status'=>1]);
+
+        Mail::raw("https://avanzandojuntos.dev-bt.xyz/carehome/login", function ($message) use ($carehome) 
+        {
+            $message->to($carehome->email)->subject('Account Approved');
+            $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+        });
+        return response()->json(['status'=>true, 'response'=>"Account approved and mail sent to carehome"]);
+    }
+
+    function findByEmail()
+    {
+        if(empty(request()->email)) return response(['status'=>false, 'error'=>'Email is required']);
+        return CareHome::whereEmail(request()->email)->exists();
     }
 }
