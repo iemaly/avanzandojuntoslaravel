@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('care_homes', function (Blueprint $table) {
             $table->id();
+            $table->longText('description')->nullable();
             $table->string('establishment')->nullable();
             $table->string('director')->nullable();
             $table->string('address')->nullable();
@@ -27,6 +28,9 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->string('password')->nullable();
             $table->double('pricing')->nullable();
+            $table->string('reset_token')->nullable();
+            $table->string('auth_token')->nullable();
+            $table->longText('access_token')->nullable();
             $table->tinyInteger('status')->default(0)->nullable();
             $table->timestamps();
         });

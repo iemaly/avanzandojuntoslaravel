@@ -76,6 +76,14 @@ return [
             'driver' => 'passport',
             'provider' => 'business',
         ],
+        'carehome' => [
+            'driver' => 'session',
+            'provider' => 'carehome',
+        ],
+        'carehome_api' => [
+            'driver' => 'passport',
+            'provider' => 'carehome',
+        ],
     ],
 
     /*
@@ -115,6 +123,10 @@ return [
         'business' => [
             'driver' => 'eloquent',
             'model' => App\Models\Business::class,
+        ],
+        'carehome' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\CareHome::class,
         ],
 
         // 'users' => [

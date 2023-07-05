@@ -12,6 +12,7 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
     // CAREHOME
     Route::resource('carehomes', 'App\Http\Controllers\CareHomeController');
     Route::post('carehomes/bulk', [App\Http\Controllers\CareHomeController::class, 'bulk']);
+    Route::post('carehome/activate/{carehome}', [App\Http\Controllers\CareHomeController::class, 'activate']);
     
     // PLAN
     Route::resource('plans', 'App\Http\Controllers\PlanController');
@@ -58,4 +59,19 @@ Route::group(['middleware' => 'auth:user_api', 'prefix' => 'user'], function ()
         Route::get('professionals', [App\Http\Controllers\ProfessionalController::class, 'index'])->name('professionals.index');
         Route::get('professionals/{show}', [App\Http\Controllers\ProfessionalController::class, 'show'])->name('professionals.show');
     });
+});
+
+// CAREHOME
+Route::group(['middleware' => 'auth:carehome_api', 'prefix' => 'carehome'], function () 
+{
+    // PROFILE UPDATE
+    Route::post('update/profile_pic', [App\Http\Controllers\CareHomeController::class, 'profilePicUpdate']);
+    Route::delete('delete/profile_pic', [App\Http\Controllers\CareHomeController::class, 'deleteProfilePic']);
+    
+    // DOCUMENT
+    Route::post('upload/media', [App\Http\Controllers\CareHomeController::class, 'addMedia']);
+    Route::delete('delete/document/{document}', [App\Http\Controllers\CareHomeController::class, 'deleteDocument']);
+
+    // PROFILE UPDATE
+    Route::put('update/{carehome}', [App\Http\Controllers\CareHomeController::class, 'update']);
 });

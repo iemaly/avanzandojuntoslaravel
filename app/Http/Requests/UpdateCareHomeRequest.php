@@ -37,6 +37,7 @@ class UpdateCareHomeRequest extends FormRequest
     public function rules()
     {
         return [
+            'description' => 'nullable',
             'establishment' => 'nullable',
             'director' => 'nullable',
             'address' => 'nullable',
@@ -46,6 +47,8 @@ class UpdateCareHomeRequest extends FormRequest
             'license' => 'nullable',
             'license_status' => 'nullable',
             'ability' => 'nullable',
+            'password' => 'nullable',
+            'pricing' => 'nullable',
         ];
     }
 }

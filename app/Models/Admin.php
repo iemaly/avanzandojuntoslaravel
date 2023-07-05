@@ -54,6 +54,8 @@ class Admin extends Authenticatable
         if($professional) return ['status'=>true, 'role'=>'professional'];
         $user =  User::where('email',$email)->exists();
         if($user) return ['status'=>true, 'role'=>'user'];
+        $carehome =  CareHome::where('email',$email)->exists();
+        if($carehome) return ['status'=>true, 'role'=>'carehome'];
         return false;
     }
 
@@ -83,6 +85,13 @@ class Admin extends Authenticatable
     {
         $user = User::find($id);
         if(!$user->status) return false;
+        return true;
+    }
+
+    public function checkCarehomeApproveStatus($id) : bool
+    {
+        $carehome = CareHome::find($id);
+        if(!$carehome->status) return false;
         return true;
     }
 

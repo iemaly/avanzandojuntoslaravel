@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
 
-class CareHome extends Model
+class CareHome extends Authenticatable
 {
+    use HasApiTokens, HasFactory, Notifiable;
     use HasFactory;
 
     // QUERIES
@@ -23,11 +27,17 @@ class CareHome extends Model
         return ['status'=>true];
     }
 
+    // RELATIONS
+    public function media()
+    {
+        return $this->hasMany(CareHomeMedia::class, 'carehome_id', 'id');
+    }
+
     // ACCESSOR
-        protected function image(): Attribute
-        {
-            return Attribute::make(
-                fn ($value) => !empty($value)?asset('uploads/carehome/images/'.$value):'',
-            );
-        }
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            fn ($value) => !empty($value)?asset($value):'',
+        );
+    }
 }
