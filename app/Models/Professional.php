@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 
 class Professional extends Authenticatable
 {
@@ -47,5 +49,18 @@ class Professional extends Authenticatable
     public function carehome()
     {
         return $this->belongsTo(CareHome::class, 'carehome_id', 'id');
+    }
+
+    public function professionalMedia()
+    {
+        return $this->hasMany(ProfessionalDocument::class, 'professional_id', 'id');
+    }
+
+    // ACCESSOR
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            fn ($value) => !empty($value)?asset($value):'',
+        );
     }
 }

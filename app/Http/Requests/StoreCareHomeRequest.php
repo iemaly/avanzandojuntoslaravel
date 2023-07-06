@@ -37,7 +37,6 @@ class StoreCareHomeRequest extends FormRequest
     public function rules()
     {
         return [
-            'establishment' => 'nullable',
             'director' => 'nullable',
             'address' => 'nullable',
             'town' => 'nullable',

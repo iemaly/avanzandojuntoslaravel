@@ -388,9 +388,24 @@
             font-family: 'Nunito', sans-serif;
         }
     </style>
-    
+
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4046512651840068"
-    crossorigin="anonymous"></script>
+        crossorigin="anonymous"></script>
+
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+    <script>
+        // Enable pusher logging - don't include this in production
+        Pusher.logToConsole = true;
+
+        var pusher = new Pusher('a735ad8627d543e8039e', {
+            cluster: 'ap2'
+        });
+
+        var channel = pusher.subscribe('carehome-receive-message-1');
+        channel.bind('user-send-message-1', function(data) {
+            alert(JSON.stringify(data));
+        });
+    </script>
 </head>
 
 <body class="antialiased">

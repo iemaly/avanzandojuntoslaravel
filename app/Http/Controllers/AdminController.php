@@ -23,6 +23,7 @@ class AdminController extends Controller
         {
             $data = auth($login['role'])->user();
             if($login['role'] == 'carehome' && !(new Admin)->checkCarehomeApproveStatus($data->id)) return response()->json(['status' => false, 'error' => 'Account Not Approved']);
+            if($login['role'] == 'professional' && !(new Admin)->checkProfessionalApproveStatus($data->id)) return response()->json(['status' => false, 'error' => 'Account Not Approved']);
             if($login['role'] == 'user' && !(new Admin)->checkUserApproveStatus($data->id)) return response()->json(['status' => false, 'error' => 'Account Not Approved']);
             $data->update(['access_token' => $data->createToken('Access Token For '.$login['role'])->accessToken]);
             $data['role'] = $login['role'];

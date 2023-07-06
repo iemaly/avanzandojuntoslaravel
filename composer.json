@@ -7,13 +7,14 @@
     "require": {
         "php": "^8.0.2",
         "elegantweb/sanitizer": "^2.0",
-        "laravel/passport": "^11.6",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
+        "laravel/passport": "^11.6",
         "laravel/sanctum": "^3.0",
-        "stripe/stripe-php": "^9.8",
         "laravel/tinker": "^2.7",
-        "maatwebsite/excel": "^3.1"
+        "maatwebsite/excel": "^3.1",
+        "pusher/pusher-php-server": "^7.2",
+        "stripe/stripe-php": "^9.8"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

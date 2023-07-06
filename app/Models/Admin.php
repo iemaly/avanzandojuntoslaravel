@@ -95,6 +95,13 @@ class Admin extends Authenticatable
         return true;
     }
 
+    public function checkProfessionalApproveStatus($id) : bool
+    {
+        $professional = Professional::find($id);
+        if(!$professional->status) return false;
+        return true;
+    }
+
     public function setResetToken($email, $token)
     {
         if ($this->adminExists($email)) return $this->whereEmail($email)->update(['reset_token' => $token]);

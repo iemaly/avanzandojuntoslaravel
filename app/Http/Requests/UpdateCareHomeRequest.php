@@ -38,7 +38,6 @@ class UpdateCareHomeRequest extends FormRequest
     {
         return [
             'description' => 'nullable',
-            'establishment' => 'nullable',
             'director' => 'nullable',
             'address' => 'nullable',
             'town' => 'nullable',

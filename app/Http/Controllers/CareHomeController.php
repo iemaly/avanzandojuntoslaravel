@@ -190,7 +190,11 @@ class CareHomeController extends Controller
     function deleteDocument($document)
     {
         $document = CareHomeMedia::find($document);
-        if (!empty($document->document)) $this->deleteImage($document->document);
+        if (!empty($document->document)) 
+        {
+            $this->deleteImage($document->document);
+            $document->destroy($document->id);
+        }
         return response()->json(['status'=>true, 'response'=>'Document Deleted']);
     }
 }
