@@ -20,4 +20,9 @@ class ConversationParticipant extends Model
     {
         return $this->belongsTo(CareHome::class, 'carehome_id', 'id');
     }
+
+    public function conversations()
+    {
+        return $this->hasMany(Conversation::class, 'participant_id', 'id');
+    }
 }

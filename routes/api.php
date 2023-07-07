@@ -35,6 +35,7 @@ Route::group(['middleware' => 'auth:user_api', 'prefix' => 'user'], function ()
     });
     
     // CONVERSATION
+    Route::get('conversations', [App\Http\Controllers\ConversationController::class, 'index']);
     Route::post('conversation_participants', [App\Http\Controllers\ConversationParticipantController::class, 'store']);
     Route::post('conversations', [App\Http\Controllers\ConversationController::class, 'store']);
     Route::get('conversations/{participant}', [App\Http\Controllers\ConversationController::class, 'show']);
@@ -57,6 +58,7 @@ Route::group(['middleware' => 'auth:carehome_api', 'prefix' => 'carehome'], func
     Route::put('update/{carehome}', [App\Http\Controllers\CareHomeController::class, 'update']);
 
     // CONVERSATION
+    Route::get('conversations', [App\Http\Controllers\ConversationController::class, 'index']);
     Route::post('conversations', [App\Http\Controllers\ConversationController::class, 'store']);
     Route::get('conversations/{participant}', [App\Http\Controllers\ConversationController::class, 'show']);
     Route::post('conversations/update/{participant}/{sender_type}', [App\Http\Controllers\ConversationController::class, 'update']);
@@ -74,9 +76,13 @@ Route::group(['middleware' => 'auth:professional_api', 'prefix' => 'professional
     // DOCUMENT
     Route::post('upload/media', [App\Http\Controllers\ProfessionalController::class, 'addMedia']);
     Route::delete('delete/document/{document}', [App\Http\Controllers\ProfessionalController::class, 'deleteDocument']);
-
+    
     // PROFILE UPDATE
     Route::put('update/{professional}', [App\Http\Controllers\ProfessionalController::class, 'update']);
+    
+    // SLOTS
+    Route::post('{professional}/slots', [App\Http\Controllers\ProfessionalController::class, 'storeSlot']);
+    Route::delete('/slots/{slot}', [App\Http\Controllers\ProfessionalController::class, 'deleteSlot']);
 });
 
 // UNIVERSAL ROUTES

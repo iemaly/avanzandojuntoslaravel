@@ -56,6 +56,11 @@ class Professional extends Authenticatable
         return $this->hasMany(ProfessionalDocument::class, 'professional_id', 'id');
     }
 
+    public function slots()
+    {
+        return $this->hasMany(ProfessionalSlot::class, 'professional_id', 'id');
+    }
+
     // ACCESSOR
     protected function image(): Attribute
     {

@@ -17,7 +17,14 @@ class ConversationController extends Controller
      */
     public function index()
     {
+        $conversation = ConversationParticipant::with('conversations', 'carehome', 'user')->where('user_id', auth('user_api')->id())->get();
+        return response()->json(['status'=>true, 'data'=>$conversation]);
+    }
 
+    public function indexForCarehome()
+    {
+        $conversation = ConversationParticipant::with('conversations', 'carehome', 'user')->where('carehome_id', auth('carehome_api')->id())->get();
+        return response()->json(['status'=>true, 'data'=>$conversation]);
     }
 
     /**

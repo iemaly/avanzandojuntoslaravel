@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProfessionalDocumentRequest;
 use App\Http\Requests\StoreProfessionalRequest;
+use App\Http\Requests\StoreProfessionalSlotRequest;
 use App\Http\Requests\UpdateProfessionalRequest;
 use App\Models\Professional;
 use App\Models\ProfessionalDocument;
+use App\Models\ProfessionalSlot;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -18,7 +20,7 @@ class ProfessionalController extends Controller
 
     function index()
     {
-        $professionals = Professional::with('carehome.media', 'professionalMedia')->get();
+        $professionals = Professional::with('carehome.media', 'professionalMedia', 'slots')->get();
         return response()->json(['status'=>true, 'data'=>$professionals]);
     }
 
@@ -71,7 +73,7 @@ class ProfessionalController extends Controller
 
     function show($professional)
     {
-        $professional = Professional::with('carehome.media', 'professionalMedia')->find($professional);
+        $professional = Professional::with('carehome.media', 'professionalMedia', 'slots')->find($professional);
         return response()->json(['status'=>true, 'data'=>$professional]);
     }
 
@@ -195,4 +197,24 @@ class ProfessionalController extends Controller
         }
         return response()->json(['status'=>true, 'response'=>'Document Deleted']);
     }
+
+    function storeSlot(StoreProfessionalSlotRequest $request, $professional)
+    {
+        
+        $request = $request->validated();
+        
+        try {
+            $professional = Professional::with('slots')->find($professional);
+            foreach ($request['slot'] as $slot) $professional->slots()->create($slot);
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$professional]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
+    }
+
+    function deleteSlot($slot)
+    {
+        return ProfessionalSlot::destroy($slot);
+    }
+
 }
