@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreConversationParticipantRequest;
 use App\Http\Requests\UpdateConversationParticipantRequest;
+use App\Models\Conversation;
 use App\Models\ConversationParticipant;
 
 class ConversationParticipantController extends Controller
@@ -35,6 +36,7 @@ class ConversationParticipantController extends Controller
         
         try {
             $participants = ConversationParticipant::create($request);
+            $conversation = Conversation::create(['participant_id'=>$participants->id, 'sender_type'=>'user', 'body'=>'Hey there!']);
             return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$participants]);
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);

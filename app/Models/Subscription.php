@@ -95,6 +95,34 @@ class Subscription extends Model
         return $checkout_session->url;
     }
 
+    function stripePayBusiness($data)
+    {
+        $uniqueCode = uniqid();
+        $data['uniqueCode'] = $uniqueCode;
+        $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+        $checkout_session = $stripe->checkout->sessions->create([
+        'line_items' => [[
+            'price_data' => [
+            'currency' => 'usd',
+            'product_data' => [
+                'name' => 'Avanzandos Juntos',
+            ],
+            'unit_amount' => $this->amount($data)*100,
+            ],
+            'quantity' => 1,
+        ]],
+        'metadata' => [
+            // 'order_id' => $data['order_id'],
+        ],
+        'customer_email'=>'hnhtechsolutions@gmail.com',
+        'mode' => 'payment',
+        'success_url' => route('business.storeByGet', ['data'=>$data]),
+        'cancel_url' => route('subscriptions.delete'),
+        ]);
+        Subscription::create(['creatable_type'=>'App\Models\Business', 'plan_id'=>$data['plan_id'], 'code'=>$uniqueCode, 'payment_id'=>$checkout_session->payment_intent]);
+        return $checkout_session->url;
+    }
+
     function amount($data)
     {
         $amount = Plan::find($data['plan_id'])->price;
@@ -132,6 +160,14 @@ class Subscription extends Model
         $subscription = Subscription::where(['creatable_type'=>'App\Models\Carehome', 'creatable_id'=>$data['data']['carehome_id']])->first();
         if($subscription!=null) return ['status'=>false, 'error'=>'Subscription already exists'];
         Subscription::where('code', $data['data']['uniqueCode'])->update(['creatable_type'=>'App\Models\Carehome', 'creatable_id'=>$data['data']['carehome_id'], 'code'=>'']);
+        return ['status'=>true];
+    }
+
+    function afterPayBusiness($data)
+    {
+        $subscription = Subscription::where(['creatable_type'=>'App\Models\Business', 'creatable_id'=>$data['data']['business_id']])->first();
+        if($subscription!=null) return ['status'=>false, 'error'=>'Subscription already exists'];
+        Subscription::where('code', $data['data']['uniqueCode'])->update(['creatable_type'=>'App\Models\Business', 'creatable_id'=>$data['data']['business_id'], 'code'=>'']);
         return ['status'=>true];
     }
 }

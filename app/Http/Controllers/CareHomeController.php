@@ -50,7 +50,7 @@ class CareHomeController extends Controller
             $carehome = CareHome::create((array) $carehome);
             $request['data']['carehome_id'] = $carehome->id;
             $subscription = (new Subscription())->afterPayCarehome($request);
-            return redirect('https://avanzandojuntos.dev-bt.xyz/success');
+            return redirect('https://avancarehomes.dev-bt.xyz');
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
         }

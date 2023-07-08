@@ -38,7 +38,7 @@ class StorePlanRequest extends FormRequest
     {
         return [
             'professional_type' => 'nullable|in:RN,CNA,HHA,Amade Ilave,Nutricionista, Trabajadora Social',
-            'type' => 'in:Professional,Business,User',
+            'type' => 'in:Professional,Business,User,Carehome',
             'title' => 'nullable',
             'description' => 'nullable',
             'coupon_discount' => 'nullable',

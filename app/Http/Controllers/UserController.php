@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -99,5 +100,18 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         //
+    }
+
+    function activate($user)
+    {
+        $user = User::find($user);
+        $user->update(['status'=>1]);
+
+        Mail::raw("https://avanzandojuntos.dev-bt.xyz/login", function ($message) use ($user) 
+        {
+            $message->to($user->email)->subject('Account Approved');
+            $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+        });
+        return response()->json(['status'=>true, 'response'=>"Account approved and mail sent to professional"]);
     }
 }

@@ -16,9 +16,14 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
     // PROFESSIONAL
     Route::resource('professionals', 'App\Http\Controllers\ProfessionalController');
     Route::post('professional/activate/{professional}', [App\Http\Controllers\ProfessionalController::class, 'activate']);
-
+    
     // USER
     Route::resource('users', 'App\Http\Controllers\UserController');
+    Route::post('user/activate/{user}', [App\Http\Controllers\UserController::class, 'activate']);
+
+    // BUSINESS
+    Route::resource('business', 'App\Http\Controllers\BusinessController');
+    Route::post('business/activate/{user}', [App\Http\Controllers\BusinessController::class, 'activate']);
 });
 
 // USER
@@ -89,6 +94,27 @@ Route::group(['middleware' => 'auth:professional_api', 'prefix' => 'professional
     Route::delete('/slots/{slot}', [App\Http\Controllers\ProfessionalController::class, 'deleteSlot']);
 });
 
+// BUSINESS
+Route::group(['middleware' => 'auth:business_api', 'prefix' => 'business'], function () 
+{
+    Route::get('show/{show}', [App\Http\Controllers\BusinessController::class, 'show'])->name('business.show');
+
+    // PROFILE UPDATE
+    Route::post('update/profile_pic', [App\Http\Controllers\BusinessController::class, 'profilePicUpdate']);
+    Route::delete('delete/profile_pic', [App\Http\Controllers\BusinessController::class, 'deleteProfilePic']);
+    
+    // DOCUMENT
+    // Route::post('upload/media', [App\Http\Controllers\BusinessController::class, 'addMedia']);
+    // Route::delete('delete/document/{document}', [App\Http\Controllers\BusinessController::class, 'deleteDocument']);
+    
+    // PROFILE UPDATE
+    Route::put('update/{business}', [App\Http\Controllers\BusinessController::class, 'update']);
+    
+    // SLOTS
+    // Route::post('{business}/slots', [App\Http\Controllers\BusinessController::class, 'storeSlot']);
+    // Route::delete('/slots/{slot}', [App\Http\Controllers\BusinessController::class, 'deleteSlot']);
+});
+
 // UNIVERSAL ROUTES
 
 // AUTH
@@ -118,3 +144,8 @@ Route::get('subscription/delete_empty', [App\Http\Controllers\SubscriptionContro
 // USER
 Route::post('users', [App\Http\Controllers\UserController::class, 'store'])->name('users.store');
 Route::get('subscription/afterpayuser', [App\Http\Controllers\SubscriptionController::class, 'afterPayForUser'])->name('subscriptions.user.afterpay');
+
+// BUSINESSS
+Route::post('business/subscribe', [App\Http\Controllers\SubscriptionController::class, 'storeForBusiness']);
+Route::get('business/store', [App\Http\Controllers\BusinessController::class, 'storeByGet'])->name('business.storeByGet');
+Route::post('business_by_email', [App\Http\Controllers\BusinessController::class, 'businessByEmail'])->name('business.byEmail');

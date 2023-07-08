@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreSubscriptionForBusiness;
 use App\Http\Requests\StoreSubscriptionForCarehome;
 use App\Http\Requests\StoreSubscriptionRequest;
 use App\Http\Requests\UpdateSubscriptionRequest;
@@ -54,6 +55,18 @@ class SubscriptionController extends Controller
         
         try {
             $subscription = (new Subscription())->stripePayCarehome($request);
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$subscription]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
+    }
+
+    function storeForBusiness(StoreSubscriptionForBusiness $request)
+    {
+        $request = $request->validated();
+        
+        try {
+            $subscription = (new Subscription())->stripePayBusiness($request);
             return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$subscription]);
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Business extends Authenticatable
 {
@@ -17,11 +18,11 @@ class Business extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    // protected $fillable = [
+    //     'name',
+    //     'email',
+    //     'password',
+    // ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -41,4 +42,14 @@ class Business extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    protected $table = 'business';
+
+    // ACCESSOR
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            fn ($value) => !empty($value)?asset($value):'',
+        );
+    }
 }

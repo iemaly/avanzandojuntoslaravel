@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Elegant\Sanitizer\Laravel\SanitizesInput;
 
-class UpdateBusinessRequest extends FormRequest
+class StoreSubscriptionForBusiness extends FormRequest
 {
     use SanitizesInput;
     
@@ -37,11 +37,10 @@ class UpdateBusinessRequest extends FormRequest
     public function rules()
     {
         return [
-            'fname' => 'required',
-            'lname' => 'nullable',
-            'email' => 'nullable|email|unique:business,email,'.$this->business,
-            'password' => 'required',
-            'image' => 'nullable',
+            'business' => 'nullable',
+            'coupon' => 'nullable',
+            'type' => 'nullable',
+            'plan_id' => 'nullable',
         ];
     }
 }
