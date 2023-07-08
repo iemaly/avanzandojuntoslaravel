@@ -40,7 +40,11 @@ Route::group(['middleware' => 'auth:user_api', 'prefix' => 'user'], function ()
     Route::post('conversations', [App\Http\Controllers\ConversationController::class, 'store']);
     Route::get('conversations/{participant}', [App\Http\Controllers\ConversationController::class, 'show']);
     Route::post('conversations/update/{participant}/{sender_type}', [App\Http\Controllers\ConversationController::class, 'update']);
-
+    
+    // APPOINTMENT
+    Route::post('appointments/store', [App\Http\Controllers\AppointmentController::class, 'store']);
+    Route::post('appointments/{appointment}/slots', [App\Http\Controllers\AppointmentController::class, 'storeSlot']);
+    
 });
 
 // CAREHOME
@@ -58,7 +62,7 @@ Route::group(['middleware' => 'auth:carehome_api', 'prefix' => 'carehome'], func
     Route::put('update/{carehome}', [App\Http\Controllers\CareHomeController::class, 'update']);
 
     // CONVERSATION
-    Route::get('conversations', [App\Http\Controllers\ConversationController::class, 'index']);
+    Route::get('conversations', [App\Http\Controllers\ConversationController::class, 'indexForCarehome']);
     Route::post('conversations', [App\Http\Controllers\ConversationController::class, 'store']);
     Route::get('conversations/{participant}', [App\Http\Controllers\ConversationController::class, 'show']);
     Route::post('conversations/update/{participant}/{sender_type}', [App\Http\Controllers\ConversationController::class, 'update']);

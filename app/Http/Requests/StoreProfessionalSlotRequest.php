@@ -38,7 +38,7 @@ class StoreProfessionalSlotRequest extends FormRequest
     {
         return [
             'slot' => 'required|array',
-            'slot.*.date' => 'required|date',
+            'slot.*.day' => 'required|in:Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
             'slot.*.start_time' => 'required|date_format:H:i',
             'slot.*.end_time' => 'required|date_format:H:i',
         ];

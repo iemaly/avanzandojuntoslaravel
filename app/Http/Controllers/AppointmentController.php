@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAppointmentRequest;
+use App\Http\Requests\StoreAppointmentSlotRequest;
 use App\Http\Requests\UpdateAppointmentRequest;
 use App\Models\Appointment;
 
@@ -36,7 +37,14 @@ class AppointmentController extends Controller
      */
     public function store(StoreAppointmentRequest $request)
     {
-        //
+        $request = $request->validated();
+        
+        try {
+            $appointment = Appointment::create($request);
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$appointment]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
     }
 
     /**
@@ -82,5 +90,18 @@ class AppointmentController extends Controller
     public function destroy(Appointment $appointment)
     {
         //
+    }
+
+    function storeSlot(StoreAppointmentSlotRequest $request, $appointment)
+    {        
+        $request = $request->validated();
+        
+        try {
+            $appointment = Appointment::with('slots')->find($appointment);
+            foreach ($request['slot'] as $slot) $appointment->slots()->create($slot);
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$appointment]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
     }
 }

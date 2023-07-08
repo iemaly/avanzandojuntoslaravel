@@ -401,8 +401,8 @@
             cluster: 'ap2'
         });
 
-        var channel = pusher.subscribe('carehome-receive-message-1');
-        channel.bind('user-send-message-1', function(data) {
+        var channel = pusher.subscribe('user-receive-message-1');
+        channel.bind('carehome-send-message-1', function(data) {
             alert(JSON.stringify(data));
         });
     </script>

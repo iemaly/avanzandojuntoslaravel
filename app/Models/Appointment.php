@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Appointment extends Model
 {
     use HasFactory;
+
+    // RELATIONS
+
+    public function slots()
+    {
+        return $this->hasMany(AppointmentSlot::class, 'appointment_id', 'id');
+    }
 }

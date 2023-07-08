@@ -61,7 +61,7 @@ class ConversationController extends Controller
             
             $participant = ConversationParticipant::find($request['participant_id']);
             if($request['sender_type']=='user') $pusher->trigger('carehome-receive-message-'.$participant->carehome_id, 'user-send-message-'.$participant->user_id, ['message' => $request['body']]);
-            else $pusher->trigger('user-receive-message', 'carehome-send-message', ['message' => $request['body']]);
+            else $pusher->trigger('user-receive-message-'.$participant->user_id, 'carehome-send-message-'.$participant->carehome_id, ['message' => $request['body']]);
             return response()->json(['status'=>true, 'response'=>'Message Sent']);
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);

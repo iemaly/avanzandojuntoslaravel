@@ -199,8 +199,7 @@ class ProfessionalController extends Controller
     }
 
     function storeSlot(StoreProfessionalSlotRequest $request, $professional)
-    {
-        
+    {        
         $request = $request->validated();
         
         try {
