@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreign('carehome_id')->references('id')->on('care_homes')->onDelete('cascade');
             $table->enum('type', ['blueprint', 'hospital', 'personal', 'resume'])->nullable();
             $table->string('document')->nullable();
+            $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });
     }

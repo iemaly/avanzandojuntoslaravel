@@ -6,6 +6,7 @@ use App\Http\Requests\StoreConversationParticipantRequest;
 use App\Http\Requests\UpdateConversationParticipantRequest;
 use App\Models\Conversation;
 use App\Models\ConversationParticipant;
+use Pusher\Pusher;
 
 class ConversationParticipantController extends Controller
 {
@@ -37,7 +38,16 @@ class ConversationParticipantController extends Controller
         try {
             $participants = ConversationParticipant::create($request);
             $conversation = Conversation::create(['participant_id'=>$participants->id, 'sender_type'=>'user', 'body'=>'Hey there!']);
-            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$participants]);
+            $pusher = new Pusher(
+                env('PUSHER_APP_KEY'),
+                env('PUSHER_APP_SECRET'),
+                env('PUSHER_APP_ID'),
+                [
+                    'cluster' => env('PUSHER_APP_CLUSTER'),
+                    'useTLS' => true,
+                ]
+            );
+            $pusher->trigger('carehome-receive-message-'.$participants->carehome_id, 'user-send-message-'.$participants->user_id, ['message' => 'Hey There!']);
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
         }

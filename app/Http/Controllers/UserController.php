@@ -105,13 +105,18 @@ class UserController extends Controller
     function activate($user)
     {
         $user = User::find($user);
-        $user->update(['status'=>1]);
-
-        Mail::raw("https://avanzandojuntos.dev-bt.xyz/login", function ($message) use ($user) 
+        if($user->status == 0)
         {
-            $message->to($user->email)->subject('Account Approved');
-            $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-        });
-        return response()->json(['status'=>true, 'response'=>"Account approved and mail sent to professional"]);
+            $user->update(['status'=>1]);
+
+            Mail::raw("https://avanzandojuntos.dev-bt.xyz/login", function ($message) use ($user) 
+            {
+                $message->to($user->email)->subject('Account Approved');
+                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+            });
+            return response()->json(['status'=>true, 'response'=>"Account approved and mail sent to professional"]);
+        }
+        $user->update(['status'=>0]);
+        return response()->json(['status'=>true, 'response'=>"Account deactivated"]);
     }
 }

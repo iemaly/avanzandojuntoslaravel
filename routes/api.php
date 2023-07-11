@@ -24,6 +24,14 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
     // BUSINESS
     Route::resource('business', 'App\Http\Controllers\BusinessController');
     Route::post('business/activate/{user}', [App\Http\Controllers\BusinessController::class, 'activate']);
+    // BUSINESS POSTS
+    Route::resource('posts', 'App\Http\Controllers\PostController');
+    Route::post('b/post/activate/{post}', [App\Http\Controllers\PostController::class, 'activate']);
+    Route::post('post/image/update/{post}', [App\Http\Controllers\PostController::class, 'imageUpdate']);
+
+    // CAREHOME BLUEPRINT
+    Route::post('approve_blueprint/{blueprint}', [App\Http\Controllers\CareHomeController::class, 'approveBlueprint']);
+    Route::post('refuse_blueprint/{blueprint}', [App\Http\Controllers\CareHomeController::class, 'refuseBlueprint']);
 });
 
 // USER
@@ -71,6 +79,17 @@ Route::group(['middleware' => 'auth:carehome_api', 'prefix' => 'carehome'], func
     Route::post('conversations', [App\Http\Controllers\ConversationController::class, 'store']);
     Route::get('conversations/{participant}', [App\Http\Controllers\ConversationController::class, 'show']);
     Route::post('conversations/update/{participant}/{sender_type}', [App\Http\Controllers\ConversationController::class, 'update']);
+    
+    // BLUEPRINT
+    Route::post('buildings', [App\Http\Controllers\CareHomeController::class, 'storeBuilding']);
+    Route::post('floors', [App\Http\Controllers\CareHomeController::class, 'storeFloor']);
+    Route::post('beds', [App\Http\Controllers\CareHomeController::class, 'storeBed']);
+    Route::post('store_single_floor/{building}', [App\Http\Controllers\CareHomeController::class, 'storeSingleFloor']);
+    Route::post('store_single_bed/{floor}', [App\Http\Controllers\CareHomeController::class, 'storeSingleBed']);
+    Route::delete('delete_building/{building}', [App\Http\Controllers\CareHomeController::class, 'destroyBuilding']);
+    Route::delete('delete_floor/{floor}', [App\Http\Controllers\CareHomeController::class, 'destroyFloor']);
+    Route::delete('delete_bed/{bed}', [App\Http\Controllers\CareHomeController::class, 'destroyBed']);
+
 });
 
 // PROFESSIONAL
@@ -102,17 +121,13 @@ Route::group(['middleware' => 'auth:business_api', 'prefix' => 'business'], func
     // PROFILE UPDATE
     Route::post('update/profile_pic', [App\Http\Controllers\BusinessController::class, 'profilePicUpdate']);
     Route::delete('delete/profile_pic', [App\Http\Controllers\BusinessController::class, 'deleteProfilePic']);
-    
-    // DOCUMENT
-    // Route::post('upload/media', [App\Http\Controllers\BusinessController::class, 'addMedia']);
-    // Route::delete('delete/document/{document}', [App\Http\Controllers\BusinessController::class, 'deleteDocument']);
-    
-    // PROFILE UPDATE
     Route::put('update/{business}', [App\Http\Controllers\BusinessController::class, 'update']);
     
-    // SLOTS
-    // Route::post('{business}/slots', [App\Http\Controllers\BusinessController::class, 'storeSlot']);
-    // Route::delete('/slots/{slot}', [App\Http\Controllers\BusinessController::class, 'deleteSlot']);
+    // POST
+    Route::post('posts', [App\Http\Controllers\PostController::class, 'store']);
+    Route::get('posts', [App\Http\Controllers\PostController::class, 'index']);
+    Route::get('posts/{post}', [App\Http\Controllers\PostController::class, 'show']);
+    Route::post('post/image/update/{post}', [App\Http\Controllers\PostController::class, 'imageUpdate']);
 });
 
 // UNIVERSAL ROUTES
@@ -149,3 +164,7 @@ Route::get('subscription/afterpayuser', [App\Http\Controllers\SubscriptionContro
 Route::post('business/subscribe', [App\Http\Controllers\SubscriptionController::class, 'storeForBusiness']);
 Route::get('business/store', [App\Http\Controllers\BusinessController::class, 'storeByGet'])->name('business.storeByGet');
 Route::post('business_by_email', [App\Http\Controllers\BusinessController::class, 'businessByEmail'])->name('business.byEmail');
+
+// BUSINESS POSTS
+Route::get('posts', [App\Http\Controllers\PostController::class, 'indexForAll']);
+Route::get('posts/{post}', [App\Http\Controllers\PostController::class, 'showForAll']);

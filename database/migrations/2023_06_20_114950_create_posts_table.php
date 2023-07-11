@@ -15,8 +15,12 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('business_id')->nullable();
+            $table->foreign('business_id')->references('id')->on('business')->onDelete('cascade');
+            $table->string('title')->nullable();
             $table->longText('post')->nullable();
-            $table->tinyInteger('status')->default(1)->nullable();
+            $table->string('image')->nullable();
+            $table->tinyInteger('status')->default(0)->nullable();
             $table->timestamps();
         });
     }

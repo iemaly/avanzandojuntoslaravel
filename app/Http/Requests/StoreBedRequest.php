@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Elegant\Sanitizer\Laravel\SanitizesInput;
 
-class UpdatePostRequest extends FormRequest
+class StoreBedRequest extends FormRequest
 {
     use SanitizesInput;
     
@@ -37,9 +37,8 @@ class UpdatePostRequest extends FormRequest
     public function rules()
     {
         return [
-            'business_id' => 'required|exists:business,id',
-            'title' => 'nullable',
-            'post' => 'nullable',
+            'floor_id' => 'required|exists:floors,id',
+            'number_of_beds' => 'required|integer',
         ];
     }
 }

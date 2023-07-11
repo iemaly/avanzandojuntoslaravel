@@ -10,6 +10,13 @@ class CareHomeMedia extends Model
 {
     use HasFactory;
 
+    // RELATIONS
+
+    public function carehome()
+    {
+        return $this->belongsTo(CareHome::class, 'carehome_id', 'id');
+    }
+
     // ACCESSOR
     protected function document(): Attribute
     {

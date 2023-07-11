@@ -33,6 +33,11 @@ class CareHome extends Authenticatable
         return $this->hasMany(CareHomeMedia::class, 'carehome_id', 'id');
     }
 
+    public function buildings()
+    {
+        return $this->hasMany(Building::class, 'carehome_id', 'id');
+    }
+
     // ACCESSOR
     protected function image(): Attribute
     {

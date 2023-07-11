@@ -13,15 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('business', function (Blueprint $table) {
+        Schema::create('buildings', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->string('image')->nullable();
-            $table->string('reset_token')->nullable();
-            $table->string('auth_token')->nullable();
-            $table->longText('access_token')->nullable();
+            $table->unsignedBigInteger('carehome_id')->nullable();
+            $table->foreign('carehome_id')->references('id')->on('care_homes')->onDelete('cascade');
+            $table->string('title')->nullable();
             $table->tinyInteger('status')->default(0);
             $table->timestamps();
         });
@@ -34,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('business');
+        Schema::dropIfExists('buildings');
     }
 };

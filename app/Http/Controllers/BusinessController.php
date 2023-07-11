@@ -80,13 +80,18 @@ class BusinessController extends Controller
     function activate($business)
     {
         $business = Business::find($business);
-        $business->update(['status' => 1]);
+        if($business->status == 0)
+        {
+            $business->update(['status' => 1]);
 
-        Mail::raw("https://avanbusiness.dev-bt.xyz", function ($message) use ($business) {
-            $message->to($business->email)->subject('Account Approved');
-            $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-        });
-        return response()->json(['status' => true, 'response' => "Account approved and mail sent to business"]);
+            Mail::raw("https://avanbusiness.dev-bt.xyz", function ($message) use ($business) {
+                $message->to($business->email)->subject('Account Approved');
+                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+            });
+            return response()->json(['status' => true, 'response' => "Account approved and mail sent to business"]);
+        }
+        $business->update(['status'=>0]);
+        return response()->json(['status'=>true, 'response'=>"Account deactivated"]);
     }
 
     function businessByEmail()

@@ -85,6 +85,8 @@ class ProfessionalController extends Controller
     function activate($professional)
     {
         $professional = Professional::find($professional);
+        if($professional->status == 0)
+        {
         $professional->update(['status'=>1]);
 
         Mail::raw("https://avanzandojuntos.dev-bt.xyz/nurse/login", function ($message) use ($professional) 
@@ -93,6 +95,9 @@ class ProfessionalController extends Controller
             $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
         });
         return response()->json(['status'=>true, 'response'=>"Account approved and mail sent to professional"]);
+        }
+        $professional->update(['status'=>0]);
+        return response()->json(['status'=>true, 'response'=>"Account deactivated"]);
     }
 
     function proFessionalByEmail()
