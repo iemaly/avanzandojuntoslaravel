@@ -53,6 +53,13 @@ Route::group(['middleware' => 'auth:user_api', 'prefix' => 'user'], function ()
     Route::post('conversations', [App\Http\Controllers\ConversationController::class, 'store']);
     Route::get('conversations/{participant}', [App\Http\Controllers\ConversationController::class, 'show']);
     Route::post('conversations/update/{participant}/{sender_type}', [App\Http\Controllers\ConversationController::class, 'update']);
+
+    // CONVERSATION WITH PROFESSIONAL
+    Route::get('professional_conversations', [App\Http\Controllers\ProfessionalConversationController::class, 'index']);
+    Route::post('professional_conversation_participants', [App\Http\Controllers\ProfessionalConverstionParticipantController::class, 'store']);
+    Route::post('professional_conversations', [App\Http\Controllers\ProfessionalConversationController::class, 'store']);
+    Route::get('professional_conversations/{participant}', [App\Http\Controllers\ProfessionalConversationController::class, 'show']);
+    Route::post('professional_conversations/update/{participant}/{sender_type}', [App\Http\Controllers\ProfessionalConversationController::class, 'update']);
     
     // APPOINTMENT
     Route::post('appointments/store', [App\Http\Controllers\AppointmentController::class, 'store']);
@@ -81,6 +88,9 @@ Route::group(['middleware' => 'auth:carehome_api', 'prefix' => 'carehome'], func
     Route::post('conversations/update/{participant}/{sender_type}', [App\Http\Controllers\ConversationController::class, 'update']);
     
     // BLUEPRINT
+    Route::get('buildings', [App\Http\Controllers\CareHomeController::class, 'buildings']);
+    Route::get('floors/{building}', [App\Http\Controllers\CareHomeController::class, 'floors']);
+    Route::get('beds/{floor}', [App\Http\Controllers\CareHomeController::class, 'beds']);
     Route::post('buildings', [App\Http\Controllers\CareHomeController::class, 'storeBuilding']);
     Route::post('floors', [App\Http\Controllers\CareHomeController::class, 'storeFloor']);
     Route::post('beds', [App\Http\Controllers\CareHomeController::class, 'storeBed']);
@@ -111,6 +121,12 @@ Route::group(['middleware' => 'auth:professional_api', 'prefix' => 'professional
     // SLOTS
     Route::post('{professional}/slots', [App\Http\Controllers\ProfessionalController::class, 'storeSlot']);
     Route::delete('/slots/{slot}', [App\Http\Controllers\ProfessionalController::class, 'deleteSlot']);
+
+    // CONVERSATION
+    Route::get('conversations', [App\Http\Controllers\ProfessionalConversationController::class, 'indexForProfessional']);
+    Route::post('conversations', [App\Http\Controllers\ProfessionalConversationController::class, 'store']);
+    Route::get('conversations/{participant}', [App\Http\Controllers\ProfessionalConversationController::class, 'show']);
+    Route::post('conversations/update/{participant}/{sender_type}', [App\Http\Controllers\ProfessionalConversationController::class, 'update']);
 });
 
 // BUSINESS

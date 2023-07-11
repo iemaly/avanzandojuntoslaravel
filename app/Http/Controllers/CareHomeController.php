@@ -209,6 +209,7 @@ class CareHomeController extends Controller
         return response()->json(['status'=>true, 'response'=>'Document Deleted']);
     }
 
+    // BLUEPRINT WORK
     function approveBlueprint($blueprint)
     {
         $blueprint = CareHomeMedia::with('carehome')->find($blueprint);
@@ -348,5 +349,23 @@ class CareHomeController extends Controller
     function destroyBed($bed)
     {
         return Bed::destroy($bed);
+    }
+
+    function buildings()
+    {
+        $buildings = Building::where('carehome_id', auth('carehome_api')->id())->get();
+        return response()->json(['status'=>true, 'data'=>$buildings]);
+    }
+
+    function floors($building)
+    {
+        $floors = Floor::where('building_id', $building)->get();
+        return response()->json(['status'=>true, 'data'=>$floors]);
+    }
+
+    function beds($floor)
+    {
+        $beds = Bed::with('floor.building')->where('floor_id', $floor)->get();
+        return response()->json(['status'=>true, 'data'=>$beds]);
     }
 }

@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Bed extends Model
 {
     use HasFactory;
+
+    // RELATION
+    public function floor()
+    {
+        return $this->belongsTo(Floor::class, 'floor_id', 'id');
+    }
 }
