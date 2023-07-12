@@ -32,6 +32,14 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
     // CAREHOME BLUEPRINT
     Route::post('approve_blueprint/{blueprint}', [App\Http\Controllers\CareHomeController::class, 'approveBlueprint']);
     Route::post('refuse_blueprint/{blueprint}', [App\Http\Controllers\CareHomeController::class, 'refuseBlueprint']);
+
+    // BUSINESS ADVERTISEMENT
+    Route::get('advertisements', [App\Http\Controllers\BusinessController::class, 'advertisements']);
+    Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementShow']);
+    Route::delete('advertisements/delete/{advertisement}', [App\Http\Controllers\BusinessController::class, 'destroyAdvertisement']);
+    Route::post('approve_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'approveAdvertisement']);
+    Route::post('refuse_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'refuseAdvertisement']);
+    Route::post('feature_unfeature_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'featureUnfeature']);
 });
 
 // USER
@@ -65,6 +73,9 @@ Route::group(['middleware' => 'auth:user_api', 'prefix' => 'user'], function ()
     Route::post('appointments/store', [App\Http\Controllers\AppointmentController::class, 'store']);
     Route::post('appointments/{appointment}/slots', [App\Http\Controllers\AppointmentController::class, 'storeSlot']);
     
+    // ADVERTISEMENT
+    Route::get('advertisements', [App\Http\Controllers\BusinessController::class, 'advertisementsForUser']);
+    Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementShow']);
 });
 
 // CAREHOME
@@ -144,6 +155,14 @@ Route::group(['middleware' => 'auth:business_api', 'prefix' => 'business'], func
     Route::get('posts', [App\Http\Controllers\PostController::class, 'index']);
     Route::get('posts/{post}', [App\Http\Controllers\PostController::class, 'show']);
     Route::post('post/image/update/{post}', [App\Http\Controllers\PostController::class, 'imageUpdate']);
+    
+    // ADVERTISEMENT
+    Route::get('advertisements', [App\Http\Controllers\BusinessController::class, 'businessAdvertisements']);
+    Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementShow']);
+    Route::post('advertisements', [App\Http\Controllers\BusinessController::class, 'storeAdvertisement']);
+    Route::post('advertisements/image/update/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementImageUpdate']);
+    Route::delete('advertisements/delete/image/{advertisement}', [App\Http\Controllers\BusinessController::class, 'deleteAdvertisementImage']);
+    Route::put('advertisements/update/{advertisement}', [App\Http\Controllers\BusinessController::class, 'updateAdvertisement']);
 });
 
 // UNIVERSAL ROUTES

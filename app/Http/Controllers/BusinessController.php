@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAdvertisementRequest;
 use App\Http\Requests\StoreBusinessRequest;
+use App\Http\Requests\UpdateAdvertisementRequest;
 use App\Http\Requests\UpdateBusinessRequest;
+use App\Models\Advertisement;
 use App\Models\Business;
 use App\Models\Subscription;
 use App\Traits\ImageUploadTrait;
@@ -137,4 +140,147 @@ class BusinessController extends Controller
         }
         return response()->json(['status' => true, 'response' => 'Image Deleted']);
     }
+
+    // ADVERTISEMENT
+    function storeAdvertisement(StoreAdvertisementRequest $request)
+    {
+        $request = $request->validated();
+
+        try {
+            if (!empty($request['image'])) {
+                $imageName = $request['image']->getClientOriginalName() . '.' . $request['image']->extension();
+                $request['image']->move(public_path('uploads/business/advertisement/images'), $imageName);
+                $request['image'] = $imageName;
+            }
+            $request['business_id'] = auth('business_api')->id();
+            $advertisement = Advertisement::create($request);
+            return response()->json(['status' => true, 'response' => 'Record Created', 'data' => $advertisement]);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'error' => $th->getMessage()]);
+        }
+    }
+
+    function advertisementImageUpdate($advertisement)
+    {
+        $validator = Validator::make(
+            request()->all(),
+            [
+                'image' => 'required|mimes:jpeg,jpg,png,gif|max:30000',
+            ]
+        );
+
+        if ($validator->fails()) return response()->json(['status'=>false, 'error'=>$validator->errors()]);
+
+        $advertisement = Advertisement::find($advertisement);
+        try {
+            // DELETING OLD IMAGE IF EXISTS
+            if (!empty($advertisement->image)) {
+                $this->deleteImage($advertisement->image);
+                $advertisement->update(['image' => (NULL)]);
+            }
+
+            // UPLOADING NEW IMAGE
+            $imageName = request()->image->getClientOriginalName() . '.' . request()->image->extension();
+            request()->image->move(public_path('uploads/business/advertisement/images'), $imageName);
+            $advertisement->update(['image' => $imageName]);
+            return response()->json(['status' => true, 'response' => 'Image Updated']);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'error' => $th->getMessage()]);
+        }
+    }
+
+    function deleteAdvertisementImage($advertisement)
+    {
+        $advertisement = Advertisement::find($advertisement);
+        if (!empty($advertisement->image)) {
+            $this->deleteImage($advertisement->image);
+            $advertisement->update(['image' => '']);
+        }
+        return response()->json(['status' => true, 'response' => 'Image Deleted']);
+    }
+
+    function updateAdvertisement(UpdateAdvertisementRequest $request, $advertisement)
+    {
+        $request = $request->validated();
+
+        try {
+            $advertisement = Advertisement::find($advertisement);
+            $advertisement->update($request);
+            return response()->json(['status' => true, 'response' => 'Record Updated', 'data' => $advertisement]);
+        } catch (\Throwable $th) {
+            return response()->json(['status' => false, 'error' => $th->getMessage()]);
+        }
+    }
+
+    function advertisements()
+    {
+        $advertisements = Advertisement::with('business')->get();
+        return response()->json(['status' => true, 'data' => $advertisements]);
+    }
+
+    function businessAdvertisements()
+    {
+        $advertisements = Advertisement::with('business')->where('business_id', auth('business_api')->id())->get();
+        return response()->json(['status' => true, 'data' => $advertisements]);
+    }
+
+    function advertisementsForUser()
+    {
+        $advertisements = Advertisement::with('business')->where('status', 1)->get();
+        return response()->json(['status' => true, 'data' => $advertisements]);
+    }
+
+    function advertisementShow($advertisement)
+    {
+        $advertisement = Advertisement::with('business')->find($advertisement);
+        return response()->json(['status' => true, 'data' => $advertisement]);
+    }
+
+    function destroyAdvertisement($advertisement)
+    {
+        return Advertisement::destroy($advertisement);
+    }
+
+    function approveAdvertisement($Advertisement)
+    {
+        $Advertisement = Advertisement::with('business')->find($Advertisement);
+        if ($Advertisement->status==0) 
+        {
+            $Advertisement->update(['status'=>1]);
+            
+            Mail::raw("Advertisement Approved.", function ($message) use ($Advertisement) 
+            {
+                $message->to($Advertisement->business->email)->subject('Advertisement Approved');
+                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+            });
+            return response()->json(['status'=>true, 'response'=>"Advertisement approved and mail sent to business"]);
+        }
+        return response()->json(['status'=>true, 'response'=>"Already approved"]);
+    }
+
+    function refuseAdvertisement($Advertisement)
+    {
+        $Advertisement = Advertisement::with('business')->find($Advertisement);
+        if ($Advertisement->status==1) $Advertisement->update(['status'=>0]);
+        return response()->json(['status'=>true, 'response'=>"Advertisement refused"]);
+    }
+
+    function featureUnfeature($advertisement)
+    {
+        $advertisement = Advertisement::find($advertisement);
+        if($advertisement->is_featured == 0)
+        {
+            $advertisement->update(['is_featured'=>1]);
+            
+            Mail::raw("Advertisement Featured", function ($message) use ($advertisement) 
+            {
+                $message->to($advertisement->business->email)->subject('Advertisement Featured');
+                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+            });
+            return response()->json(['status'=>true, 'response'=>"Advertisement Featured"]);
+        }
+        $advertisement->update(['is_featured'=>0]);
+        return response()->json(['status'=>true, 'response'=>"Advertisement Unfeature"]);
+    }
+
 }

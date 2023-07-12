@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Elegant\Sanitizer\Laravel\SanitizesInput;
 
-class StorePlanRequest extends FormRequest
+class UpdateAdvertisementRequest extends FormRequest
 {
     use SanitizesInput;
     
@@ -37,15 +37,9 @@ class StorePlanRequest extends FormRequest
     public function rules()
     {
         return [
-            'professional_type' => 'nullable|in:RN,CNA,HHA,Amade Ilave,Nutricionista, Trabajadora Social',
-            'type' => 'in:Professional,Business,User,Carehome',
             'title' => 'nullable',
             'description' => 'nullable',
-            'coupon_discount' => 'nullable',
-            'coupon' => 'nullable',
-            'duration_type' => 'in:day,week,month',
-            'duration' => 'nullable',
-            'price' => 'nullable',
+            'link' => 'nullable',
         ];
     }
 }

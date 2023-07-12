@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->string('coupon')->nullable();
             $table->string('coupon_discount')->nullable();
+            $table->enum('duration_type', ['day', 'week', 'month'])->nullable();
             $table->bigInteger('duration')->nullable();
             $table->double('price')->nullable();
             $table->timestamps();

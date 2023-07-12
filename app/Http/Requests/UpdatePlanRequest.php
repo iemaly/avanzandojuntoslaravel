@@ -44,6 +44,7 @@ class UpdatePlanRequest extends FormRequest
             'description' => 'nullable',
             'coupon_discount' => 'nullable',
             'coupon' => 'nullable',
+            'duration_type' => 'in:day,week,month',
             'duration' => 'nullable',
             'price' => 'nullable',
         ];
