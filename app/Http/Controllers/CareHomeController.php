@@ -246,7 +246,7 @@ class CareHomeController extends Controller
         $request = $request->validated();
         
         try {
-            $request['carehome_id']=auth('carehome_api')->id();
+            $request['carehome_id']=request()->carehome_id??auth('carehome_api')->id();
             $building = Building::create($request);
             return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$building]);
         } catch (\Throwable $th) {
@@ -353,7 +353,8 @@ class CareHomeController extends Controller
 
     function buildings()
     {
-        $buildings = Building::where('carehome_id', auth('carehome_api')->id())->get();
+        $carehomeId = request()->carehome_id??auth('carehome_api')->id();
+        $buildings = Building::with('carehome')->where('carehome_id', $carehomeId)->get();
         return response()->json(['status'=>true, 'data'=>$buildings]);
     }
 

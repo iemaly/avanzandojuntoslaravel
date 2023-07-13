@@ -33,6 +33,18 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
     Route::post('approve_blueprint/{blueprint}', [App\Http\Controllers\CareHomeController::class, 'approveBlueprint']);
     Route::post('refuse_blueprint/{blueprint}', [App\Http\Controllers\CareHomeController::class, 'refuseBlueprint']);
 
+    Route::get('buildings', [App\Http\Controllers\CareHomeController::class, 'buildings']);
+    Route::get('floors/{building}', [App\Http\Controllers\CareHomeController::class, 'floors']);
+    Route::get('beds/{floor}', [App\Http\Controllers\CareHomeController::class, 'beds']);
+    Route::post('buildings', [App\Http\Controllers\CareHomeController::class, 'storeBuilding']);
+    Route::post('floors', [App\Http\Controllers\CareHomeController::class, 'storeFloor']);
+    Route::post('beds', [App\Http\Controllers\CareHomeController::class, 'storeBed']);
+    Route::post('store_single_floor/{building}', [App\Http\Controllers\CareHomeController::class, 'storeSingleFloor']);
+    Route::post('store_single_bed/{floor}', [App\Http\Controllers\CareHomeController::class, 'storeSingleBed']);
+    Route::delete('delete_building/{building}', [App\Http\Controllers\CareHomeController::class, 'destroyBuilding']);
+    Route::delete('delete_floor/{floor}', [App\Http\Controllers\CareHomeController::class, 'destroyFloor']);
+    Route::delete('delete_bed/{bed}', [App\Http\Controllers\CareHomeController::class, 'destroyBed']);
+
     // BUSINESS ADVERTISEMENT
     Route::get('advertisements', [App\Http\Controllers\BusinessController::class, 'advertisements']);
     Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementShow']);
@@ -138,6 +150,13 @@ Route::group(['middleware' => 'auth:professional_api', 'prefix' => 'professional
     Route::post('conversations', [App\Http\Controllers\ProfessionalConversationController::class, 'store']);
     Route::get('conversations/{participant}', [App\Http\Controllers\ProfessionalConversationController::class, 'show']);
     Route::post('conversations/update/{participant}/{sender_type}', [App\Http\Controllers\ProfessionalConversationController::class, 'update']);
+
+    // PAYMENT METHOD
+    Route::get('payment_methods', [App\Http\Controllers\ProfessionalController::class, 'paymentMethodsIndex']);
+    Route::post('payment_methods', [App\Http\Controllers\ProfessionalController::class, 'storePaymentMethod']);
+    Route::put('payment_methods/{payment_method}', [App\Http\Controllers\ProfessionalController::class, 'paymentMethodUpdate']);
+    Route::get('payment_methods/{payment_method}', [App\Http\Controllers\ProfessionalController::class, 'paymentMethodShow']);
+    Route::delete('payment_methods/{payment_method}', [App\Http\Controllers\ProfessionalController::class, 'paymentMethodDestroy']);
 });
 
 // BUSINESS

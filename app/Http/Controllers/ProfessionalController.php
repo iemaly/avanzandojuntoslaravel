@@ -3,16 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreProfessionalDocumentRequest;
+use App\Http\Requests\StoreProfessionalPaymentMethodRequest;
 use App\Http\Requests\StoreProfessionalRequest;
 use App\Http\Requests\StoreProfessionalSlotRequest;
+use App\Http\Requests\UpdateProfessionalPaymentMethodRequest;
 use App\Http\Requests\UpdateProfessionalRequest;
 use App\Models\Professional;
 use App\Models\ProfessionalDocument;
+use App\Models\ProfessionalPaymentMethod;
 use App\Models\ProfessionalSlot;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use App\Traits\ImageUploadTrait;
+use Stripe\PaymentMethod;
 
 class ProfessionalController extends Controller
 {
@@ -20,7 +24,7 @@ class ProfessionalController extends Controller
 
     function index()
     {
-        $professionals = Professional::with('carehome.media', 'professionalMedia', 'slots')->get();
+        $professionals = Professional::with('carehome.media', 'professionalMedia', 'slots', 'paymentMethods')->get();
         return response()->json(['status'=>true, 'data'=>$professionals]);
     }
 
@@ -73,7 +77,7 @@ class ProfessionalController extends Controller
 
     function show($professional)
     {
-        $professional = Professional::with('carehome.media', 'professionalMedia', 'slots')->find($professional);
+        $professional = Professional::with('carehome.media', 'professionalMedia', 'slots', 'paymentMethods')->find($professional);
         return response()->json(['status'=>true, 'data'=>$professional]);
     }
 
@@ -221,4 +225,47 @@ class ProfessionalController extends Controller
         return ProfessionalSlot::destroy($slot);
     }
 
+    // PAYMENT METHOD
+    function paymentMethodsIndex()
+    {
+        $methods = ProfessionalPaymentMethod::with('professional')->where('professional_id', auth('professional_api')->id())->get();
+        return response()->json(['status'=>true, 'data'=>$methods]);
+    }
+
+    function storePaymentMethod(StoreProfessionalPaymentMethodRequest $request)
+    {
+        $request = $request->validated();
+        
+        try {
+            $request['professional_id'] = auth('professional_api')->id();
+            $paymentMethod = ProfessionalPaymentMethod::create($request);
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$paymentMethod]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
+    }
+
+    function paymentMethodUpdate(UpdateProfessionalPaymentMethodRequest $request, $paymentMethod)
+    {
+        $request = $request->validated();
+        
+        try {
+            $paymentMethod = ProfessionalPaymentMethod::find($paymentMethod);
+            $paymentMethod->update($request);
+            return response()->json(['status'=>true, 'response'=>'Record Updated', 'data'=>$paymentMethod]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
+    }
+
+    function paymentMethodShow($paymentMethod)
+    {
+        $paymentMethod = ProfessionalPaymentMethod::with('professional')->where(['professional_id'=>auth('professional_api')->id(), 'id'=>$paymentMethod])->first();
+        return response()->json(['status'=>true, 'data'=>$paymentMethod]);
+    }
+
+    function paymentMethodDestroy($paymentMethod)
+    {
+        return ProfessionalPaymentMethod::where(['professional_id'=>auth('professional_api')->id(), 'id'=>$paymentMethod])->delete($paymentMethod);
+    }
 }

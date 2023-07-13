@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class ProfessionalPaymentMethod extends Model
 {
     use HasFactory;
+
+    // RELATIONS
+
+    public function professional()
+    {
+        return $this->belongsTo(Professional::class, 'professional_id', 'id');
+    }
 }
