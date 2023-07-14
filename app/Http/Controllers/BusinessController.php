@@ -19,7 +19,9 @@ class BusinessController extends Controller
 
     function index()
     {
-        $business = Business::get();
+        $businessId = request()->business_id;
+        $business = Business::with('advertisements')->get();
+        if(!empty($businessId)) $business = Business::with('advertisements')->where('id',$businessId)->get();
         return response()->json(['status' => true, 'data' => $business]);
     }
 
@@ -226,7 +228,8 @@ class BusinessController extends Controller
 
     function advertisementsForUser()
     {
-        $advertisements = Advertisement::with('business')->where('status', 1)->get();
+        $advertisements = Advertisement::with('business')->where(['status'=>1])->get();
+        if(!empty(request()->business_id)) $advertisements = Advertisement::with('business')->where(['status'=>1, 'business_id'=>request()->business_id])->get();
         return response()->json(['status' => true, 'data' => $advertisements]);
     }
 

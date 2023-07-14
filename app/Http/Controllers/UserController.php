@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreBookBedRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\BookBed;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
@@ -118,5 +121,75 @@ class UserController extends Controller
         }
         $user->update(['status'=>0]);
         return response()->json(['status'=>true, 'response'=>"Account deactivated"]);
+    }
+
+    // BED BOOKING
+    public function bookBed(StoreBookBedRequest $request)
+    {
+        $request = $request->validated();
+        
+        try {
+            $request['user_id'] = auth('user_api')->id();
+            $booking = BookBed::create($request);
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$booking]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
+    }
+
+    function findBedByDate()
+    {
+        $date = request()->date;
+        $careHomeId = request()->carehome_id;
+
+        $availableBeds = DB::table('beds')
+            ->leftJoin('book_beds', function ($join) use ($date) {
+                $join->on('beds.id', '=', 'book_beds.bed_id')
+                    ->where('book_beds.date', '=', $date);
+            })
+            ->leftJoin('floors', 'beds.floor_id', '=', 'floors.id')
+            ->leftJoin('buildings', 'floors.building_id', '=', 'buildings.id')
+            ->where('buildings.carehome_id', '=', $careHomeId)
+            ->whereNull('book_beds.bed_id')
+            ->select('beds.*')
+            ->get();
+
+        return response()->json(['status'=>true, 'data'=>$availableBeds]);
+    }
+
+    function findBeds()
+    {
+        $date = request()->date;
+        $startTime = request()->start_time;
+        $endTime = request()->end_time;
+        $careHomeId = request()->carehome_id;
+
+        $availableBeds = DB::table('beds')
+            ->leftJoin('book_beds', function ($join) use ($date, $startTime, $endTime) {
+                $join->on('beds.id', '=', 'book_beds.bed_id')
+                    ->where('book_beds.date', '=', $date)
+                    ->where(function ($query) use ($startTime, $endTime) {
+                        $query->where(function ($q) use ($startTime, $endTime) {
+                            $q->where('book_beds.start_time', '<', $startTime)
+                                ->where('book_beds.end_time', '>', $startTime);
+                        })
+                        ->orWhere(function ($q) use ($startTime, $endTime) {
+                            $q->where('book_beds.start_time', '<', $endTime)
+                                ->where('book_beds.end_time', '>', $endTime);
+                        })
+                        ->orWhere(function ($q) use ($startTime, $endTime) {
+                            $q->whereBetween('book_beds.start_time', [$startTime, $endTime])
+                                ->orWhereBetween('book_beds.end_time', [$startTime, $endTime]);
+                        });
+                    });
+            })
+            ->leftJoin('floors', 'beds.floor_id', '=', 'floors.id')
+            ->leftJoin('buildings', 'floors.building_id', '=', 'buildings.id')
+            ->where('buildings.carehome_id', '=', $careHomeId)
+            ->whereNull('book_beds.bed_id')
+            ->select('beds.*')
+            ->get();
+
+        return response()->json(['status'=>true, 'data'=>$availableBeds]);
     }
 }

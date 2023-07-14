@@ -21,7 +21,7 @@ class Advertisement extends Model
     protected function image(): Attribute
     {
         return Attribute::make(
-            fn ($value) => !empty($value)?asset('uploads/business/advertisement/images'.$value):'',
+            fn ($value) => !empty($value)?asset('uploads/business/advertisement/images/'.$value):'',
         );
     }
 }

@@ -45,6 +45,11 @@ class Business extends Authenticatable
 
     protected $table = 'business';
 
+    public function advertisements()
+    {
+        return $this->hasMany(Advertisement::class, 'business_id', 'id');
+    }
+
     // ACCESSOR
     protected function image(): Attribute
     {

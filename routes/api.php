@@ -88,6 +88,11 @@ Route::group(['middleware' => 'auth:user_api', 'prefix' => 'user'], function ()
     // ADVERTISEMENT
     Route::get('advertisements', [App\Http\Controllers\BusinessController::class, 'advertisementsForUser']);
     Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementShow']);
+
+    // BED BOOKING
+    Route::post('book_bed', [App\Http\Controllers\UserController::class, 'bookBed']);
+    Route::get('find_beds', [App\Http\Controllers\UserController::class, 'findBeds']);
+    Route::get('find_bed_by_date', [App\Http\Controllers\UserController::class, 'findBedByDate']);
 });
 
 // CAREHOME
@@ -219,6 +224,13 @@ Route::post('business/subscribe', [App\Http\Controllers\SubscriptionController::
 Route::get('business/store', [App\Http\Controllers\BusinessController::class, 'storeByGet'])->name('business.storeByGet');
 Route::post('business_by_email', [App\Http\Controllers\BusinessController::class, 'businessByEmail'])->name('business.byEmail');
 
+// BUSINESS
+Route::get('business', [App\Http\Controllers\BusinessController::class, 'index']);
+
 // BUSINESS POSTS
 Route::get('posts', [App\Http\Controllers\PostController::class, 'indexForAll']);
 Route::get('posts/{post}', [App\Http\Controllers\PostController::class, 'showForAll']);
+
+// BUSINESS ADVERTISEMENT
+Route::get('advertisements', [App\Http\Controllers\BusinessController::class, 'advertisementsForUser']);
+Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementShow']);
