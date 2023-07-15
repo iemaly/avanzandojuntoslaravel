@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 
 class Subadmin extends Authenticatable
 {
@@ -41,4 +43,12 @@ class Subadmin extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // ACCESSOR
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            fn ($value) => !empty($value)?asset('uploads/subadmin/images/'.$value):'',
+        );
+    }
 }

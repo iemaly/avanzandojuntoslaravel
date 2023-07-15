@@ -52,6 +52,9 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
     Route::post('approve_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'approveAdvertisement']);
     Route::post('refuse_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'refuseAdvertisement']);
     Route::post('feature_unfeature_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'featureUnfeature']);
+
+    // SUBADMIN
+    Route::resource('subadmins', 'App\Http\Controllers\SubadminController');
 });
 
 // USER
@@ -90,6 +93,7 @@ Route::group(['middleware' => 'auth:user_api', 'prefix' => 'user'], function ()
     Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementShow']);
 
     // BED BOOKING
+    Route::get('bookings', [App\Http\Controllers\UserController::class, 'myBookings']);
     Route::post('book_bed', [App\Http\Controllers\UserController::class, 'bookBed']);
     Route::get('find_beds', [App\Http\Controllers\UserController::class, 'findBeds']);
     Route::get('find_bed_by_date', [App\Http\Controllers\UserController::class, 'findBedByDate']);
@@ -187,6 +191,17 @@ Route::group(['middleware' => 'auth:business_api', 'prefix' => 'business'], func
     Route::post('advertisements/image/update/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementImageUpdate']);
     Route::delete('advertisements/delete/image/{advertisement}', [App\Http\Controllers\BusinessController::class, 'deleteAdvertisementImage']);
     Route::put('advertisements/update/{advertisement}', [App\Http\Controllers\BusinessController::class, 'updateAdvertisement']);
+});
+
+// SUBADMIN
+Route::group(['middleware' => 'auth:subadmin_api', 'prefix' => 'subadmin'], function () 
+{
+    Route::get('show/{show}', [App\Http\Controllers\SubadminController::class, 'show'])->name('subadmin.show');
+
+    // PROFILE UPDATE
+    Route::post('update/profile_pic', [App\Http\Controllers\SubadminController::class, 'profilePicUpdate']);
+    Route::delete('delete/profile_pic', [App\Http\Controllers\SubadminController::class, 'deleteProfilePic']);
+    Route::put('update/{subadmin}', [App\Http\Controllers\SubadminController::class, 'update']);
 });
 
 // UNIVERSAL ROUTES

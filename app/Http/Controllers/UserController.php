@@ -192,4 +192,10 @@ class UserController extends Controller
 
         return response()->json(['status'=>true, 'data'=>$availableBeds]);
     }
+
+    function myBookings()
+    {
+        $bookings = BookBed::with('user', 'bed.floor.building.carehome')->where('user_id', auth('user_api')->id())->get();
+        return response()->json(['status'=>true, 'data'=>$bookings]);
+    }
 }

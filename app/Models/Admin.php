@@ -58,6 +58,8 @@ class Admin extends Authenticatable
         if($carehome) return ['status'=>true, 'role'=>'carehome'];
         $business =  Business::where('email',$email)->exists();
         if($business) return ['status'=>true, 'role'=>'business'];
+        $subadmin =  Subadmin::where('email',$email)->exists();
+        if($subadmin) return ['status'=>true, 'role'=>'subadmin'];
         return false;
     }
 
@@ -76,7 +78,7 @@ class Admin extends Authenticatable
         return ['status'=>true, 'role'=>$recordExists['role'], 'attempt'=>$attempt];
     }
 
-    public function checkApproveStatus($id) : bool
+    public function checkSubadminApproveStatus($id) : bool
     {
         $subadmin = Subadmin::find($id);
         if(!$subadmin->status) return false;
