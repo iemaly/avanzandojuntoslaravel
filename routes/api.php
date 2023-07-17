@@ -202,6 +202,54 @@ Route::group(['middleware' => 'auth:subadmin_api', 'prefix' => 'subadmin'], func
     Route::post('update/profile_pic', [App\Http\Controllers\SubadminController::class, 'profilePicUpdate']);
     Route::delete('delete/profile_pic', [App\Http\Controllers\SubadminController::class, 'deleteProfilePic']);
     Route::put('update/{subadmin}', [App\Http\Controllers\SubadminController::class, 'update']);
+
+    // CAREHOME
+    Route::resource('carehomes', 'App\Http\Controllers\CareHomeController');
+    Route::post('carehomes/bulk', [App\Http\Controllers\CareHomeController::class, 'bulk']);
+    Route::post('carehome/activate/{carehome}', [App\Http\Controllers\CareHomeController::class, 'activate']);
+    
+    // PLAN
+    Route::resource('plans', 'App\Http\Controllers\PlanController');
+
+    // PROFESSIONAL
+    Route::resource('professionals', 'App\Http\Controllers\ProfessionalController');
+    Route::post('professional/activate/{professional}', [App\Http\Controllers\ProfessionalController::class, 'activate']);
+    
+    // USER
+    Route::resource('users', 'App\Http\Controllers\UserController');
+    Route::post('user/activate/{user}', [App\Http\Controllers\UserController::class, 'activate']);
+
+    // BUSINESS
+    Route::resource('business', 'App\Http\Controllers\BusinessController');
+    Route::post('business/activate/{user}', [App\Http\Controllers\BusinessController::class, 'activate']);
+    // BUSINESS POSTS
+    Route::resource('posts', 'App\Http\Controllers\PostController');
+    Route::post('b/post/activate/{post}', [App\Http\Controllers\PostController::class, 'activate']);
+    Route::post('post/image/update/{post}', [App\Http\Controllers\PostController::class, 'imageUpdate']);
+
+    // CAREHOME BLUEPRINT
+    Route::post('approve_blueprint/{blueprint}', [App\Http\Controllers\CareHomeController::class, 'approveBlueprint']);
+    Route::post('refuse_blueprint/{blueprint}', [App\Http\Controllers\CareHomeController::class, 'refuseBlueprint']);
+
+    Route::get('buildings', [App\Http\Controllers\CareHomeController::class, 'buildings']);
+    Route::get('floors/{building}', [App\Http\Controllers\CareHomeController::class, 'floors']);
+    Route::get('beds/{floor}', [App\Http\Controllers\CareHomeController::class, 'beds']);
+    Route::post('buildings', [App\Http\Controllers\CareHomeController::class, 'storeBuilding']);
+    Route::post('floors', [App\Http\Controllers\CareHomeController::class, 'storeFloor']);
+    Route::post('beds', [App\Http\Controllers\CareHomeController::class, 'storeBed']);
+    Route::post('store_single_floor/{building}', [App\Http\Controllers\CareHomeController::class, 'storeSingleFloor']);
+    Route::post('store_single_bed/{floor}', [App\Http\Controllers\CareHomeController::class, 'storeSingleBed']);
+    Route::delete('delete_building/{building}', [App\Http\Controllers\CareHomeController::class, 'destroyBuilding']);
+    Route::delete('delete_floor/{floor}', [App\Http\Controllers\CareHomeController::class, 'destroyFloor']);
+    Route::delete('delete_bed/{bed}', [App\Http\Controllers\CareHomeController::class, 'destroyBed']);
+
+    // BUSINESS ADVERTISEMENT
+    Route::get('advertisements', [App\Http\Controllers\BusinessController::class, 'advertisements']);
+    Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementShow']);
+    Route::delete('advertisements/delete/{advertisement}', [App\Http\Controllers\BusinessController::class, 'destroyAdvertisement']);
+    Route::post('approve_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'approveAdvertisement']);
+    Route::post('refuse_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'refuseAdvertisement']);
+    Route::post('feature_unfeature_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'featureUnfeature']);
 });
 
 // UNIVERSAL ROUTES

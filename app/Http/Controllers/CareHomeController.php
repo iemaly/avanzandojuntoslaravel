@@ -13,6 +13,9 @@ use App\Models\Building;
 use App\Models\CareHome;
 use App\Models\CareHomeMedia;
 use App\Models\Floor;
+use App\Models\Permission;
+use App\Models\RolePermission;
+use App\Models\Subadmin;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Mail;
 use App\Traits\ImageUploadTrait;
@@ -24,6 +27,10 @@ class CareHomeController extends Controller
 
     function index()
     {
+        $permission = Permission::where(['model'=>'CareHome', 'permission'=>'index'])->first();
+        $permission = RolePermission::where(['subadmin_id'=>auth('subadmin_api')->id(), 'permission_id'=>$permission->id])->exists();
+        if(!$permission) return response()->json(['status'=>false, 'error'=>'Unauthorized'], 403);
+
         $carehomes = CareHome::with('media', 'buildings.floors.beds')->get();
         return response()->json(['status'=>true, 'data'=>$carehomes]);
     }
