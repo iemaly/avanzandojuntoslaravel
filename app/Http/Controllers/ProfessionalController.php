@@ -8,6 +8,7 @@ use App\Http\Requests\StoreProfessionalRequest;
 use App\Http\Requests\StoreProfessionalSlotRequest;
 use App\Http\Requests\UpdateProfessionalPaymentMethodRequest;
 use App\Http\Requests\UpdateProfessionalRequest;
+use App\Models\Admin;
 use App\Models\Professional;
 use App\Models\ProfessionalDocument;
 use App\Models\ProfessionalPaymentMethod;
@@ -24,12 +25,18 @@ class ProfessionalController extends Controller
 
     function index()
     {
+        $permission = Admin::permission('Professional', 'index', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $professionals = Professional::with('carehome.media', 'professionalMedia', 'slots', 'paymentMethods')->get();
         return response()->json(['status'=>true, 'data'=>$professionals]);
     }
 
     function store(StoreProfessionalRequest $request)
     {
+        $permission = Admin::permission('Professional', 'store', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $request = $request->validated();
         
         try {
@@ -64,6 +71,9 @@ class ProfessionalController extends Controller
 
     function update(UpdateProfessionalRequest $request, $professional)
     {
+        $permission = Admin::permission('Professional', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $request = $request->validated();
         
         try {
@@ -77,12 +87,18 @@ class ProfessionalController extends Controller
 
     function show($professional)
     {
+        $permission = Admin::permission('Professional', 'show', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $professional = Professional::with('carehome.media', 'professionalMedia', 'slots', 'paymentMethods')->find($professional);
         return response()->json(['status'=>true, 'data'=>$professional]);
     }
 
     function destroy($professional)
     {
+        $permission = Admin::permission('Professional', 'delete', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         return Professional::destroy($professional);
     }
 

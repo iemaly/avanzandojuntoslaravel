@@ -141,5 +141,13 @@ class Admin extends Authenticatable
         return 1;
     }
 
+    static function permission($model, $slug, $subadmin)
+    {
+        $permission = Permission::where(['model'=>$model, 'permission'=>$slug])->first();
+        $permission = RolePermission::where(['subadmin_id'=>$subadmin, 'permission_id'=>$permission->id])->exists();
+        if(!$permission) return ['status'=>false, 'error'=>'Unauthorized'];
+        return ['status'=>true];
+    }
+
     // RELATIONS
 }

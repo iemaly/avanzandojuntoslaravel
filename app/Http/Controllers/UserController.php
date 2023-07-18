@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBookBedRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Admin;
 use App\Models\BookBed;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -19,12 +20,18 @@ class UserController extends Controller
      */
     function index()
     {
+        $permission = Admin::permission('User', 'index', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $users = User::get();
         return response()->json(['status'=>true, 'data'=>$users]);
     }
 
     function show($user)
     {
+        $permission = Admin::permission('User', 'show', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $user = User::find($user);
         return response()->json(['status'=>true, 'data'=>$user]);
     }
@@ -47,6 +54,9 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
+        $permission = Admin::permission('User', 'store', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $request = $request->validated();
         
         try {

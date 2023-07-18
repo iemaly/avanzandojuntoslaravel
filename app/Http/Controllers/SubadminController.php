@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSubadminRequest;
 use App\Http\Requests\UpdateSubadminRequest;
+use App\Models\Permission;
 use App\Models\Subadmin;
 use App\Traits\ImageUploadTrait;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,7 +19,7 @@ class SubadminController extends Controller
 
     function index()
     {
-        $subadmins = Subadmin::get();
+        $subadmins = Subadmin::with('permissions.permission')->get();
         return response()->json(['status' => true, 'data' => $subadmins]);
     }
 
@@ -120,5 +123,50 @@ class SubadminController extends Controller
             $subadmin->update(['image' => '']);
         }
         return response()->json(['status' => true, 'response' => 'Image Deleted']);
+    }
+
+    public function assignPermission($subadminId)
+    {
+        // Get the subadmin based on the given ID
+        $subadmin = Subadmin::findOrFail($subadminId);
+
+        // Retrieve all permissions and check if subadmin has each permission
+        $permissions = Permission::select('permissions.*', DB::raw('IF(role_permissions.subadmin_id IS NULL, FALSE, TRUE) AS is_assigned'))
+            ->leftJoin('role_permissions', function ($join) use ($subadminId) {
+                $join->on('permissions.id', '=', 'role_permissions.permission_id')
+                    ->where('role_permissions.subadmin_id', $subadminId);
+            })
+            ->get();
+
+        return response()->json([
+            'subadmin' => $subadmin,
+            'permissions' => $permissions,
+        ]);
+    }
+
+    public function savePermission(Request $request, $subadminId)
+    {
+        // Get the subadmin based on the given ID
+        $subadmin = Subadmin::findOrFail($subadminId);
+
+        // Validate the request data
+        $this->validate($request, [
+            'permissions' => 'required|array',
+            'permissions.*' => 'exists:permissions,id',
+        ]);
+
+        // Get the selected permission IDs
+        $permissionIds = $request->input('permissions');
+
+        // Assign the selected permissions to the subadmin
+        $subadmin->permissions()->delete(); // Remove all existing permissions
+
+        foreach ($permissionIds as $permissionId) {
+            $subadmin->permissions()->create(['permission_id' => $permissionId]);
+        }
+
+        return response()->json([
+            'message' => 'Permissions assigned successfully.',
+        ]);
     }
 }

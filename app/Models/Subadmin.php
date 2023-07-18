@@ -44,6 +44,11 @@ class Subadmin extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function permissions()
+    {
+        return $this->hasMany(RolePermission::class, 'subadmin_id', 'id');
+    }
+
     // ACCESSOR
     protected function image(): Attribute
     {

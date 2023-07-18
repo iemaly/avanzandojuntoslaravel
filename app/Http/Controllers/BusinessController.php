@@ -6,6 +6,7 @@ use App\Http\Requests\StoreAdvertisementRequest;
 use App\Http\Requests\StoreBusinessRequest;
 use App\Http\Requests\UpdateAdvertisementRequest;
 use App\Http\Requests\UpdateBusinessRequest;
+use App\Models\Admin;
 use App\Models\Advertisement;
 use App\Models\Business;
 use App\Models\Subscription;
@@ -19,6 +20,9 @@ class BusinessController extends Controller
 
     function index()
     {
+        $permission = Admin::permission('Business', 'index', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $businessId = request()->business_id;
         $business = Business::with('advertisements')->get();
         if(!empty($businessId)) $business = Business::with('advertisements')->where('id',$businessId)->get();
@@ -27,6 +31,9 @@ class BusinessController extends Controller
 
     function store(StoreBusinessRequest $request)
     {
+        $permission = Admin::permission('Business', 'store', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $request = $request->validated();
 
         try {
@@ -60,6 +67,9 @@ class BusinessController extends Controller
 
     function update(UpdateBusinessRequest $request, $business)
     {
+        $permission = Admin::permission('Business', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $request = $request->validated();
 
         try {
@@ -73,12 +83,18 @@ class BusinessController extends Controller
 
     function show($business)
     {
+        $permission = Admin::permission('Business', 'show', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $business = Business::find($business);
         return response()->json(['status' => true, 'data' => $business]);
     }
 
     function destroy($business)
     {
+        $permission = Admin::permission('Business', 'delete', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         return Business::destroy($business);
     }
 
@@ -146,6 +162,9 @@ class BusinessController extends Controller
     // ADVERTISEMENT
     function storeAdvertisement(StoreAdvertisementRequest $request)
     {
+        $permission = Admin::permission('Advertisement', 'store', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $request = $request->validated();
 
         try {
@@ -203,6 +222,9 @@ class BusinessController extends Controller
 
     function updateAdvertisement(UpdateAdvertisementRequest $request, $advertisement)
     {
+        $permission = Admin::permission('Advertisement', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $request = $request->validated();
 
         try {
@@ -216,6 +238,9 @@ class BusinessController extends Controller
 
     function advertisements()
     {
+        $permission = Admin::permission('Advertisement', 'index', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $advertisements = Advertisement::with('business')->get();
         return response()->json(['status' => true, 'data' => $advertisements]);
     }
@@ -235,12 +260,18 @@ class BusinessController extends Controller
 
     function advertisementShow($advertisement)
     {
+        $permission = Admin::permission('Advertisement', 'show', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $advertisement = Advertisement::with('business')->find($advertisement);
         return response()->json(['status' => true, 'data' => $advertisement]);
     }
 
     function destroyAdvertisement($advertisement)
     {
+        $permission = Admin::permission('Advertisement', 'delete', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         return Advertisement::destroy($advertisement);
     }
 

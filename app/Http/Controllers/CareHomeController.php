@@ -8,6 +8,7 @@ use App\Http\Requests\StoreCareHomeMediaRequest;
 use App\Http\Requests\StoreCareHomeRequest;
 use App\Http\Requests\StoreFloorRequest;
 use App\Http\Requests\UpdateCareHomeRequest;
+use App\Models\Admin;
 use App\Models\Bed;
 use App\Models\Building;
 use App\Models\CareHome;
@@ -27,9 +28,8 @@ class CareHomeController extends Controller
 
     function index()
     {
-        $permission = Permission::where(['model'=>'CareHome', 'permission'=>'index'])->first();
-        $permission = RolePermission::where(['subadmin_id'=>auth('subadmin_api')->id(), 'permission_id'=>$permission->id])->exists();
-        if(!$permission) return response()->json(['status'=>false, 'error'=>'Unauthorized'], 403);
+        $permission = Admin::permission('CareHome', 'index', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
 
         $carehomes = CareHome::with('media', 'buildings.floors.beds')->get();
         return response()->json(['status'=>true, 'data'=>$carehomes]);
@@ -37,6 +37,9 @@ class CareHomeController extends Controller
 
     function store(StoreCareHomeRequest $request)
     {
+        $permission = Admin::permission('CareHome', 'store', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+
         $request = $request->validated();
         
         try {
@@ -71,6 +74,9 @@ class CareHomeController extends Controller
 
     function update(UpdateCareHomeRequest $request, $carehome)
     {
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+
         $request = $request->validated();
         
         try {
@@ -86,12 +92,18 @@ class CareHomeController extends Controller
 
     function show($carehome)
     {
+        $permission = Admin::permission('CareHome', 'show', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+
         $carehome = Carehome::with('media', 'buildings.floors.beds')->find($carehome);
         return response()->json(['status'=>true, 'data'=>$carehome]);
     }
 
     function destroy($carehome)
     {
+        $permission = Admin::permission('CareHome', 'delete', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+
         return CareHome::destroy($carehome);
     }
 

@@ -52,9 +52,11 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
     Route::post('approve_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'approveAdvertisement']);
     Route::post('refuse_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'refuseAdvertisement']);
     Route::post('feature_unfeature_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'featureUnfeature']);
-
+    
     // SUBADMIN
     Route::resource('subadmins', 'App\Http\Controllers\SubadminController');
+    Route::get('permissions/{subadmin}', [App\Http\Controllers\SubadminController::class, 'assignPermission']);
+    Route::post('permissions/{subadmin}', [App\Http\Controllers\SubadminController::class, 'savePermission']);
 });
 
 // USER
