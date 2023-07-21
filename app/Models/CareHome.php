@@ -27,6 +27,54 @@ class CareHome extends Authenticatable
         return ['status'=>true];
     }
 
+    function stripePayForFeature($request)
+    {
+        $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+        $checkout_session = $stripe->checkout->sessions->create([
+        'line_items' => [[
+            'price_data' => [
+            'currency' => 'usd',
+            'product_data' => [
+                'name' => 'Avanzandos Juntos',
+            ],
+            'unit_amount' => $this->amount($request)*100,
+            ],
+            'quantity' => 1,
+        ]],
+        'metadata' => [
+            // 'order_id' => $data['order_id'],
+        ],
+        'customer_email'=>'hnhtechsolutions@gmail.com',
+        'mode' => 'payment',
+        'success_url' => route('carehome.feature_payment.success', ['carehome'=>$request['carehome']]),
+        'cancel_url' => 'https://hnhtechsolutions.com/404',
+        ]);
+        CareHome::find($request['carehome'])->update(['featured_payment_id'=>$checkout_session->payment_intent, 'featured_payment_status'=>'pending']);
+        return $checkout_session->url;
+    }
+    
+    function paymentSuccess($carehome)
+    {
+        CareHome::find($carehome)->update(['featured_payment_status'=>'paid']);
+        return ['status'=>true];
+    }
+
+    function amount($data)
+    {
+        $amount = Plan::find($data['plan_id'])->price;
+        if (!empty($data['coupon'])) 
+        {
+            $plan = Plan::where('coupon', $data['coupon'])->first();
+            if($plan!=null) 
+            {
+                $discountedAmount = $plan->price * ($plan->coupon_discount/100);
+                return $amount = $plan->price - $discountedAmount;
+            }
+            return $amount;
+        }
+        return $amount;
+    }
+
     // RELATIONS
     public function media()
     {

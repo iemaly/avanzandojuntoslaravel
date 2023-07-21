@@ -59,7 +59,7 @@ class BusinessController extends Controller
             $business = Business::create((array) $business);
             $request['data']['business_id'] = $business->id;
             $subscription = (new Subscription())->afterPayBusiness($request);
-            return redirect('https://avanbusiness.dev-bt.xyz');
+            return redirect('https://business.avanzandojuntos.net');
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
         }
@@ -277,6 +277,9 @@ class BusinessController extends Controller
 
     function approveAdvertisement($Advertisement)
     {
+        $permission = Admin::permission('Advertisement', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $Advertisement = Advertisement::with('business')->find($Advertisement);
         if ($Advertisement->status==0) 
         {
@@ -294,6 +297,9 @@ class BusinessController extends Controller
 
     function refuseAdvertisement($Advertisement)
     {
+        $permission = Admin::permission('Advertisement', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $Advertisement = Advertisement::with('business')->find($Advertisement);
         if ($Advertisement->status==1) $Advertisement->update(['status'=>0]);
         return response()->json(['status'=>true, 'response'=>"Advertisement refused"]);
@@ -301,6 +307,9 @@ class BusinessController extends Controller
 
     function featureUnfeature($advertisement)
     {
+        $permission = Admin::permission('Advertisement', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $advertisement = Advertisement::find($advertisement);
         if($advertisement->is_featured == 0)
         {

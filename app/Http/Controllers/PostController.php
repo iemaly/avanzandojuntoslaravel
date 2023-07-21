@@ -87,6 +87,13 @@ class PostController extends Controller
         return response()->json(['status'=>true, 'response'=>"Post Approved"]);
     }
 
+    function deactive($post)
+    {
+        $post = Post::with('business')->find($post);
+        $post->update(['status'=>0]);
+        return response()->json(['status'=>true, 'response'=>"Post Approved"]);
+    }
+
     function imageUpdate($post)
     {
         $validator = Validator::make(

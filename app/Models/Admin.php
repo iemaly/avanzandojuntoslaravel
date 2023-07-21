@@ -143,9 +143,13 @@ class Admin extends Authenticatable
 
     static function permission($model, $slug, $subadmin)
     {
-        $permission = Permission::where(['model'=>$model, 'permission'=>$slug])->first();
-        $permission = RolePermission::where(['subadmin_id'=>$subadmin, 'permission_id'=>$permission->id])->exists();
-        if(!$permission) return ['status'=>false, 'error'=>'Unauthorized'];
+        $user = auth()->user();
+        if(!empty($user) && $user->getTable() == 'subadmins')
+        {
+            $permission = Permission::where(['model'=>$model, 'permission'=>$slug])->first();
+            $permission = RolePermission::where(['subadmin_id'=>$subadmin, 'permission_id'=>$permission->id])->exists();
+            if(!$permission) return ['status'=>false, 'error'=>'Unauthorized'];
+        }
         return ['status'=>true];
     }
 

@@ -74,6 +74,7 @@ class CareHomeController extends Controller
 
     function update(UpdateCareHomeRequest $request, $carehome)
     {
+        // PERMISSION
         $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
         if(!$permission['status']) return $permission;
 
@@ -109,12 +110,20 @@ class CareHomeController extends Controller
 
     function bulk()
     {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $response = (new Carehome())->import(request()->sheet);
         return response()->json(['status'=>$response['status'], 'message'=>$response['status']===true?"Sheet Imported":$response['error']]);
     }
 
     function activate($carehome)
     {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+                
         $carehome = CareHome::find($carehome);
         if($carehome->status == 0)
         {
@@ -144,7 +153,7 @@ class CareHomeController extends Controller
             'image' => 'required|mimes:jpeg,jpg,png,gif|max:30000',
         ]);
 
-        if ($validator->fails()) return back()->withErrors($validator)->withInput();
+        if ($validator->fails()) return response()->json(['status'=>false, 'error'=>$validator->errors()]);
 
         $media = CareHome::find(auth('carehome_api')->id());
         try {
@@ -231,6 +240,10 @@ class CareHomeController extends Controller
     // BLUEPRINT WORK
     function approveBlueprint($blueprint)
     {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $blueprint = CareHomeMedia::with('carehome')->find($blueprint);
         if($blueprint->type=='blueprint')
         {
@@ -251,6 +264,10 @@ class CareHomeController extends Controller
 
     function refuseBlueprint($blueprint)
     {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $blueprint = CareHomeMedia::with('carehome')->find($blueprint);
         if($blueprint->type=='blueprint')
         {
@@ -262,6 +279,10 @@ class CareHomeController extends Controller
 
     function storeBuilding(StoreBuildingRequest $request)
     {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $request = $request->validated();
         
         try {
@@ -275,6 +296,10 @@ class CareHomeController extends Controller
 
     function storeFloor(StoreFloorRequest $request)
     {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $request = $request->validated();
         $numberOfFloors = $request['number_of_floors'];
         $floorCount = 1;
@@ -294,6 +319,10 @@ class CareHomeController extends Controller
 
     function storeBed(StoreBedRequest $request)
     {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $request = $request->validated();
         $numberOfBeds = $request['number_of_beds'];
         $bedCount = 1;
@@ -312,7 +341,11 @@ class CareHomeController extends Controller
     }
 
     function storeSingleFloor($building)
-    {   
+    {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+           
         try {
             $building = Building::with('floors')->find($building);
             if(!$building->floors->isEmpty())
@@ -334,7 +367,11 @@ class CareHomeController extends Controller
     }
 
     function storeSingleBed($floor)
-    {   
+    {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+           
         try {
             $floor = Floor::with('beds')->find($floor);
             if(!$floor->beds->isEmpty())
@@ -357,21 +394,38 @@ class CareHomeController extends Controller
 
     function destroyBuilding($building)
     {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         return Building::destroy($building);
     }
 
     function destroyFloor($floor)
     {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         return Floor::destroy($floor);
     }
 
     function destroyBed($bed)
     {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         return Bed::destroy($bed);
     }
 
     function buildings()
     {
+        
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $carehomeId = request()->carehome_id??auth('carehome_api')->id();
         $buildings = Building::with('carehome')->where('carehome_id', $carehomeId)->get();
         return response()->json(['status'=>true, 'data'=>$buildings]);
@@ -379,13 +433,63 @@ class CareHomeController extends Controller
 
     function floors($building)
     {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $floors = Floor::where('building_id', $building)->get();
         return response()->json(['status'=>true, 'data'=>$floors]);
     }
 
     function beds($floor)
     {
+        // PERMISSION
+        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $beds = Bed::with('floor.building')->where('floor_id', $floor)->get();
         return response()->json(['status'=>true, 'data'=>$beds]);
+    }
+
+    // APPLY FOR FEATURE
+    function requestFeature()
+    {
+        $validator = Validator::make(request()->all(),
+        [
+            'carehome' => 'required|exists:care_homes,id',
+            'plan_id' => 'required|exists:plans,id',
+            'coupon' => 'nullable|string|exists:plans,coupon',
+        ]);
+
+        if ($validator->fails()) return response()->json(['status'=>false, 'error'=>$validator->errors()]);
+
+        try {
+            $featureRequest = (new CareHome())->stripePayForFeature(request()->all());
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$featureRequest]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
+    }
+
+    function paymentSuccess($carehome)
+    {
+        try {
+            (new CareHome())->paymentSuccess($carehome);
+            return redirect('https://carehomes.avanzandojuntos.net');
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
+    }
+
+    function feature($carehome)
+    {
+        CareHome::find($carehome)->update(['is_featured'=>1, 'featured_date'=>now()]);
+        return response()->json(['status'=>true, 'response'=>'Carehome featured']);
+    }
+    
+    function unfeature($carehome)
+    {
+        CareHome::find($carehome)->update(['is_featured'=>0]);
+        return response()->json(['status'=>true, 'response'=>'Carehome Unfeatured']);
     }
 }

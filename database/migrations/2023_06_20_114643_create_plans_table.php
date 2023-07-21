@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('plans', function (Blueprint $table) {
             $table->id();
             $table->enum('type', ['Professional', 'Business', 'User', 'Carehome'])->nullable();
+            $table->enum('plan_type', ['Signup', 'Feature'])->default('Signup')->nullable();
             $table->enum('professional_type', ['RN', 'CNA', 'HHA', 'Amade Ilave', 'Nutricionista', 'Trabajadora Social'])->nullable();
             $table->string('title')->nullable();
             $table->string('description')->nullable();

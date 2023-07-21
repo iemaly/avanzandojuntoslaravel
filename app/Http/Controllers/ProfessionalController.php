@@ -104,6 +104,9 @@ class ProfessionalController extends Controller
 
     function activate($professional)
     {
+        $permission = Admin::permission('Professional', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $professional = Professional::find($professional);
         if($professional->status == 0)
         {
@@ -283,5 +286,47 @@ class ProfessionalController extends Controller
     function paymentMethodDestroy($paymentMethod)
     {
         return ProfessionalPaymentMethod::where(['professional_id'=>auth('professional_api')->id(), 'id'=>$paymentMethod])->delete($paymentMethod);
+    }
+
+    // APPLY FOR FEATURE
+    function requestFeature()
+    {
+        $validator = Validator::make(request()->all(),
+        [
+            'professional' => 'required|exists:care_homes,id',
+            'plan_id' => 'required|exists:plans,id',
+            'coupon' => 'nullable|string|exists:plans,coupon',
+        ]);
+
+        if ($validator->fails()) return response()->json(['status'=>false, 'error'=>$validator->errors()]);
+
+        try {
+            $featureRequest = (new Professional())->stripePayForFeature(request()->all());
+            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$featureRequest]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
+    }
+
+    function paymentSuccess($professional)
+    {
+        try {
+            (new Professional())->paymentSuccess($professional);
+            return redirect('https://professional.avanzandojuntos.net');
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
+    }
+
+    function feature($professional)
+    {
+        Professional::find($professional)->update(['is_featured'=>1, 'featured_date'=>now()]);
+        return response()->json(['status'=>true, 'response'=>'Professional featured']);
+    }
+    
+    function unfeature($professional)
+    {
+        Professional::find($professional)->update(['is_featured'=>0]);
+        return response()->json(['status'=>true, 'response'=>'Professional Unfeatured']);
     }
 }

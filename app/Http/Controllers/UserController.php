@@ -117,6 +117,9 @@ class UserController extends Controller
 
     function activate($user)
     {
+        $permission = Admin::permission('User', 'update', auth('subadmin_api')->id());
+        if(!$permission['status']) return $permission;
+        
         $user = User::find($user);
         if($user->status == 0)
         {

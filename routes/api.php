@@ -10,12 +10,19 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
     Route::post('carehomes/bulk', [App\Http\Controllers\CareHomeController::class, 'bulk']);
     Route::post('carehome/activate/{carehome}', [App\Http\Controllers\CareHomeController::class, 'activate']);
     
+    // FEATURE
+    Route::get('carehomes/feature/{carehome}', [App\Http\Controllers\CareHomeController::class, 'feature']);
+    Route::get('carehomes/unfeature/{carehome}', [App\Http\Controllers\CareHomeController::class, 'unfeature']);
+    
     // PLAN
     Route::resource('plans', 'App\Http\Controllers\PlanController');
 
     // PROFESSIONAL
     Route::resource('professionals', 'App\Http\Controllers\ProfessionalController');
     Route::post('professional/activate/{professional}', [App\Http\Controllers\ProfessionalController::class, 'activate']);
+    // FEATURE
+    Route::get('professional/feature/{professional}', [App\Http\Controllers\ProfessionalController::class, 'feature']);
+    Route::get('professional/unfeature/{professional}', [App\Http\Controllers\ProfessionalController::class, 'unfeature']);
     
     // USER
     Route::resource('users', 'App\Http\Controllers\UserController');
@@ -27,6 +34,7 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
     // BUSINESS POSTS
     Route::resource('posts', 'App\Http\Controllers\PostController');
     Route::post('b/post/activate/{post}', [App\Http\Controllers\PostController::class, 'activate']);
+    Route::post('b/post/deactive/{post}', [App\Http\Controllers\PostController::class, 'deactive']);
     Route::post('post/image/update/{post}', [App\Http\Controllers\PostController::class, 'imageUpdate']);
 
     // CAREHOME BLUEPRINT
@@ -134,6 +142,9 @@ Route::group(['middleware' => 'auth:carehome_api', 'prefix' => 'carehome'], func
     Route::delete('delete_floor/{floor}', [App\Http\Controllers\CareHomeController::class, 'destroyFloor']);
     Route::delete('delete_bed/{bed}', [App\Http\Controllers\CareHomeController::class, 'destroyBed']);
 
+    // FEATURE
+    Route::post('apply/feature', [App\Http\Controllers\CareHomeController::class, 'requestFeature']);
+    
 });
 
 // PROFESSIONAL
@@ -168,6 +179,9 @@ Route::group(['middleware' => 'auth:professional_api', 'prefix' => 'professional
     Route::put('payment_methods/{payment_method}', [App\Http\Controllers\ProfessionalController::class, 'paymentMethodUpdate']);
     Route::get('payment_methods/{payment_method}', [App\Http\Controllers\ProfessionalController::class, 'paymentMethodShow']);
     Route::delete('payment_methods/{payment_method}', [App\Http\Controllers\ProfessionalController::class, 'paymentMethodDestroy']);
+
+    // FEATURE
+    Route::post('apply/feature', [App\Http\Controllers\ProfessionalController::class, 'requestFeature']);
 });
 
 // BUSINESS
@@ -271,11 +285,15 @@ Route::get('carehome/store', [App\Http\Controllers\CareHomeController::class, 's
 Route::get('carehomes', [App\Http\Controllers\CareHomeController::class, 'index']);
 Route::get('carehomes/{id}', [App\Http\Controllers\CareHomeController::class, 'show']);
 Route::post('find_by_email', [App\Http\Controllers\CareHomeController::class, 'findByEmail']);
-
+// FEATURE
+Route::get('payment_success/{carehome}', [App\Http\Controllers\CareHomeController::class, 'paymentSuccess'])->name('carehome.feature_payment.success');
 
 // PROFESSIONAL
 Route::get('professional', [App\Http\Controllers\ProfessionalController::class, 'storeByGet'])->name('professional.store');
 Route::post('professional_by_email', [App\Http\Controllers\ProfessionalController::class, 'proFessionalByEmail'])->name('professional.byEmail');
+// FEATURE
+Route::get('professional/payment_success/{professional}', [App\Http\Controllers\ProfessionalController::class, 'paymentSuccess'])->name('professional.feature_payment.success');
+
 // SUBSCRIPTION
 Route::resource('subscriptions', 'App\Http\Controllers\SubscriptionController');
 Route::get('subscription/delete_empty', [App\Http\Controllers\SubscriptionController::class, 'deleteEmpty'])->name('subscriptions.delete');
@@ -299,3 +317,7 @@ Route::get('posts/{post}', [App\Http\Controllers\PostController::class, 'showFor
 // BUSINESS ADVERTISEMENT
 Route::get('advertisements', [App\Http\Controllers\BusinessController::class, 'advertisementsForUser']);
 Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementShow']);
+
+// VIDEO CALLING
+Route::post('/create-room', [App\Http\Controllers\VideoCallController::class, 'createRoom']);
+Route::post('/generate-token', [App\Http\Controllers\VideoCallController::class, 'generateToken']);
