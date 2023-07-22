@@ -17,13 +17,31 @@ class PostController extends Controller
     function index()
     {
         $business = auth('business_api')->id();
-        $posts = $business==null?Post::with('business')->get():Post::with('business')->where('business_id', $business)->get();
+        if (request()->has('type')) {
+            // Get the value of the 'type' parameter from the request
+            $type = request()->input('type');
+        
+            // Add the 'where' condition to the query using the 'type' value
+            $posts = $business==null?Post::with('business')->where('type', $type)->get(S):Post::with('business')->where(['business_id'=>$business, 'type'=>$type])->get();
+        } else {
+            // If the 'type' parameter doesn't exist, execute the original query without the 'where' condition
+            $posts = $business==null?Post::with('business')->get():Post::with('business')->where('business_id', $business)->get();
+        }
         return response()->json(['status'=>true, 'data'=>$posts]);
     }
 
     function indexForAll()
     {
-        $posts = Post::with('business')->where('status',1)->get();
+        if (request()->has('type')) {
+            // Get the value of the 'type' parameter from the request
+            $type = request()->input('type');
+        
+            // Add the 'where' condition to the query using the 'type' value
+            $posts = Post::with('business')->where(['status'=>1,'type'=>$type])->paginate(3);
+        } else {
+            // If the 'type' parameter doesn't exist, execute the original query without the 'where' condition
+            $posts = Post::with('business')->where('status',1)->paginate(3);
+        }
         return response()->json(['status'=>true, 'data'=>$posts]);
     }
 

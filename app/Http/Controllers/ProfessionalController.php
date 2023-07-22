@@ -293,7 +293,7 @@ class ProfessionalController extends Controller
     {
         $validator = Validator::make(request()->all(),
         [
-            'professional' => 'required|exists:care_homes,id',
+            'professional' => 'required|exists:professionals,id',
             'plan_id' => 'required|exists:plans,id',
             'coupon' => 'nullable|string|exists:plans,coupon',
         ]);

@@ -38,6 +38,7 @@ class UpdatePostRequest extends FormRequest
     {
         return [
             'business_id' => 'required|exists:business,id',
+            'type' => 'in:article,video,photo',
             'title' => 'nullable',
             'post' => 'nullable',
         ];

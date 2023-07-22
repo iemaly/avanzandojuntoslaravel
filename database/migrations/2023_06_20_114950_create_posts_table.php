@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('business_id')->nullable();
             $table->foreign('business_id')->references('id')->on('business')->onDelete('cascade');
+            $table->enum('type', ['article', 'video', 'photo'])->default('photo')->nullable();
             $table->string('title')->nullable();
             $table->longText('post')->nullable();
             $table->string('image')->nullable();
