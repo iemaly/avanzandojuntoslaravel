@@ -46,21 +46,39 @@ class Admin extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    private function adminExists($email)
+    private function adminExists($email, $type)
     {
-        $admin = $this->whereEmail($email)->exists();
-        if($admin) return ['status'=>true, 'role'=>'admin'];
-        $professional =  Professional::whereEmail($email)->exists();
-        if($professional) return ['status'=>true, 'role'=>'professional'];
-        $user =  User::where('email',$email)->exists();
-        if($user) return ['status'=>true, 'role'=>'user'];
-        $carehome =  CareHome::where('email',$email)->exists();
-        if($carehome) return ['status'=>true, 'role'=>'carehome'];
-        $business =  Business::where('email',$email)->exists();
-        if($business) return ['status'=>true, 'role'=>'business'];
-        $subadmin =  Subadmin::where('email',$email)->exists();
-        if($subadmin) return ['status'=>true, 'role'=>'subadmin'];
-        return false;
+        switch ($type) 
+        {
+            case 'carehome':
+                $carehome =  CareHome::where('email',$email)->exists();
+                if($carehome) return ['status'=>true, 'role'=>'carehome'];
+                break;
+            case 'user':
+                $user =  User::where('email',$email)->exists();
+                if($user) return ['status'=>true, 'role'=>'user'];
+                break;
+            case 'professional':
+                $professional =  Professional::whereEmail($email)->exists();
+                if($professional) return ['status'=>true, 'role'=>'professional'];
+                break;
+            case 'subadmin':
+                $subadmin =  Subadmin::where('email',$email)->exists();
+                if($subadmin) return ['status'=>true, 'role'=>'subadmin'];
+            break;
+            case 'business':
+                $business =  Business::where('email',$email)->exists();
+                if($business) return ['status'=>true, 'role'=>'business'];
+                break;
+            case 'admin':
+                $admin = $this->whereEmail($email)->exists();
+                if($admin) return ['status'=>true, 'role'=>'admin'];
+                break;
+            
+            default:
+                return false;
+            break;
+        }
     }
 
     private function adminByTokenExists($token)
@@ -70,9 +88,9 @@ class Admin extends Authenticatable
         return false;
     }
 
-    public function login($email, $password)
+    public function login($email, $password, $type)
     {
-        $recordExists = $this->adminExists($email);
+        $recordExists = $this->adminExists($email, $type);
         if (!$recordExists) return ['status'=>404]; 
         $attempt = auth($recordExists['role'])->attempt(['email' => $email, 'password' => $password]);
         return ['status'=>true, 'role'=>$recordExists['role'], 'attempt'=>$attempt];

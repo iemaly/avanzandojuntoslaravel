@@ -63,6 +63,7 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
     
     // SUBADMIN
     Route::resource('subadmins', 'App\Http\Controllers\SubadminController');
+    Route::post('subadmin/activate/{subadmin}', [App\Http\Controllers\SubadminController::class, 'activate']);
     Route::get('permissions/{subadmin}', [App\Http\Controllers\SubadminController::class, 'assignPermission']);
     Route::post('permissions/{subadmin}', [App\Http\Controllers\SubadminController::class, 'savePermission']);
 });

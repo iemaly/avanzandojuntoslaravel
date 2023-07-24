@@ -128,7 +128,7 @@ class Subscription extends Model
         $amount = Plan::find($data['plan_id'])->price;
         if (!empty($data['coupon'])) 
         {
-            $plan = Plan::where('coupon', $data['coupon'])->first();
+            $plan = Plan::where(['id'=>$data['plan_id'],'coupon'=>$data['coupon']])->first();
             if($plan!=null) 
             {
                 $discountedAmount = $plan->price * ($plan->coupon_discount/100);

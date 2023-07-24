@@ -35,6 +35,7 @@ class LoginAdminRequest extends FormRequest
     public function rules()
     {
         return [
+            'type' => 'required|in:carehome,user,professional,subadmin,business,admin',
             'email' => 'required|max:60',
             'password' => 'required|max:60',
         ];

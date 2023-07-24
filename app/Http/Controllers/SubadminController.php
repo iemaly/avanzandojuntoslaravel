@@ -71,7 +71,7 @@ class SubadminController extends Controller
         if ($subadmin->status == 0) {
             $subadmin->update(['status' => 1]);
 
-            Mail::raw("https://avanzandojuntos.dev-bt.xyz/login", function ($message) use ($subadmin) {
+            Mail::raw("https://subadmin.avanzandojuntos.net/login", function ($message) use ($subadmin) {
                 $message->to($subadmin->email)->subject('Account Approved');
                 $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
             });

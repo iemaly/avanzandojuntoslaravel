@@ -173,26 +173,23 @@ class UserController extends Controller
     function findBeds()
     {
         $date = request()->date;
+        $endDate = request()->end_date;
         $startTime = request()->start_time;
         $endTime = request()->end_time;
         $careHomeId = request()->carehome_id;
 
         $availableBeds = DB::table('beds')
-            ->leftJoin('book_beds', function ($join) use ($date, $startTime, $endTime) {
+            ->leftJoin('book_beds', function ($join) use ($date, $endDate, $startTime, $endTime) {
                 $join->on('beds.id', '=', 'book_beds.bed_id')
-                    ->where('book_beds.date', '=', $date)
-                    ->where(function ($query) use ($startTime, $endTime) {
-                        $query->where(function ($q) use ($startTime, $endTime) {
-                            $q->where('book_beds.start_time', '<', $startTime)
-                                ->where('book_beds.end_time', '>', $startTime);
-                        })
-                        ->orWhere(function ($q) use ($startTime, $endTime) {
-                            $q->where('book_beds.start_time', '<', $endTime)
-                                ->where('book_beds.end_time', '>', $endTime);
-                        })
-                        ->orWhere(function ($q) use ($startTime, $endTime) {
-                            $q->whereBetween('book_beds.start_time', [$startTime, $endTime])
-                                ->orWhereBetween('book_beds.end_time', [$startTime, $endTime]);
+                    ->where(function ($query) use ($date, $endDate, $startTime, $endTime) {
+                        $query->where(function ($query) use ($date, $endDate, $startTime, $endTime) {
+                            $query->whereRaw("CONCAT(book_beds.`end_date`, ' ', book_beds.`end_time`) BETWEEN ? AND ?", [
+                                \Carbon\Carbon::parse($date)->format("Y-m-d") . " " . $startTime,
+                                \Carbon\Carbon::parse($endDate)->format("Y-m-d") . " " . $endTime
+                            ])->orWhereRaw("CONCAT(book_beds.`date`, ' ', book_beds.`start_time`) BETWEEN ? AND ?", [
+                                \Carbon\Carbon::parse($date)->format("Y-m-d") . " " . $startTime,
+                                \Carbon\Carbon::parse($endDate)->format("Y-m-d") . " " . $endTime
+                            ]);
                         });
                     });
             })
@@ -200,10 +197,10 @@ class UserController extends Controller
             ->leftJoin('buildings', 'floors.building_id', '=', 'buildings.id')
             ->where('buildings.carehome_id', '=', $careHomeId)
             ->whereNull('book_beds.bed_id')
-            ->select('beds.*')
+            ->select('beds.*', 'floors.title as floor_title')
             ->get();
 
-        return response()->json(['status'=>true, 'data'=>$availableBeds]);
+        return response()->json(['status' => true, 'data' => $availableBeds]);
     }
 
     function myBookings()

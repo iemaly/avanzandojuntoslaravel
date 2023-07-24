@@ -15,7 +15,7 @@ class AdminController extends Controller
     protected function login(LoginAdminRequest $request)
     {
         $request = $request->validated();
-        $login = (new Admin)->login($request['email'], $request['password']);
+        $login = (new Admin)->login($request['email'], $request['password'], $request['type']);
         $status = false;
         if($login['status'] === 404) return response()->json(['status' => $status, 'error' => 'Email Not Found']);
         if(!$login['attempt']) return response()->json(['status' => $status, 'error' => 'Invalid Credentials']);
@@ -26,6 +26,7 @@ class AdminController extends Controller
             if($login['role'] == 'professional' && !(new Admin)->checkProfessionalApproveStatus($data->id)) return response()->json(['status' => false, 'error' => 'Account Not Approved']);
             if($login['role'] == 'user' && !(new Admin)->checkUserApproveStatus($data->id)) return response()->json(['status' => false, 'error' => 'Account Not Approved']);
             if($login['role'] == 'business' && !(new Admin)->checkBusinessApproveStatus($data->id)) return response()->json(['status' => false, 'error' => 'Account Not Approved']);
+            if($login['role'] == 'subadmin' && !(new Admin)->checkSubadminApproveStatus($data->id)) return response()->json(['status' => false, 'error' => 'Account Not Approved']);
             $data->update(['access_token' => $data->createToken('Access Token For '.$login['role'])->accessToken]);
             $data['role'] = $login['role'];
             $status = true;

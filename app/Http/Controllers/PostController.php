@@ -109,7 +109,7 @@ class PostController extends Controller
     {
         $post = Post::with('business')->find($post);
         $post->update(['status'=>0]);
-        return response()->json(['status'=>true, 'response'=>"Post Approved"]);
+        return response()->json(['status'=>true, 'response'=>"Post Refused"]);
     }
 
     function imageUpdate($post)

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('bed_id')->nullable();
             $table->foreign('bed_id')->references('id')->on('beds')->onDelete('cascade');
             $table->date('date')->nullable();
+            $table->date('end_date')->nullable();
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
             $table->tinyInteger('status')->default(1);
