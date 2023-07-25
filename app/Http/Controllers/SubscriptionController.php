@@ -88,7 +88,7 @@ class SubscriptionController extends Controller
     function afterPayForUser()
     {
         (new Subscription)->afteryPayUser(request()->all());
-        return redirect('https://avanzandojuntos.dev-bt.xyz/success');
+        return redirect('https://user.avanzandojuntos.net/success');
     }
 
     /**

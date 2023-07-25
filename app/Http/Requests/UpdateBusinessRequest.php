@@ -37,8 +37,7 @@ class UpdateBusinessRequest extends FormRequest
     public function rules()
     {
         return [
-            'fname' => 'required',
-            'lname' => 'nullable',
+            'title' => 'required',
             'email' => 'nullable|email|unique:business,email,'.$this->business,
             'password' => 'required',
             'image' => 'nullable',
