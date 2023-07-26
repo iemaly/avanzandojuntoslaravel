@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('link')->nullable();
             $table->tinyInteger('is_featured')->default(0);
             $table->tinyInteger('status')->default(0);
+            $table->tinyInteger('is_viewed')->default(0);
             $table->timestamps();
         });
     }

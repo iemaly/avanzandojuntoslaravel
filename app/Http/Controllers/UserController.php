@@ -23,7 +23,7 @@ class UserController extends Controller
         $permission = Admin::permission('User', 'index', auth('subadmin_api')->id());
         if(!$permission['status']) return $permission;
         
-        $users = User::get();
+        $users = User::orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$users]);
     }
 
@@ -68,6 +68,11 @@ class UserController extends Controller
                 $request['image']=$imageName;
             }
             $user = User::create($request);
+            Mail::raw(route('email_verification', ['role'=>'user','id'=>$user->id]), function ($message) use ($user) 
+            {
+                $message->to($user->email)->subject('Avanzando Juntos Email Verification');
+                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+            });
             return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$user]);
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);

@@ -28,7 +28,7 @@ class ProfessionalController extends Controller
         $permission = Admin::permission('Professional', 'index', auth('subadmin_api')->id());
         if(!$permission['status']) return $permission;
         
-        $professionals = Professional::with('carehome.media', 'professionalMedia', 'slots', 'paymentMethods')->get();
+        $professionals = Professional::with('carehome.media', 'professionalMedia', 'slots', 'paymentMethods')->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$professionals]);
     }
 
@@ -61,6 +61,11 @@ class ProfessionalController extends Controller
         try {
             $professional->password = bcrypt($professional->password);
             $professional = Professional::create((array) $professional);
+            Mail::raw(route('email_verification', ['role'=>'professional','id'=>$professional->id]), function ($message) use ($professional) 
+            {
+                $message->to($professional->email)->subject('Avanzando Juntos Email Verification');
+                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+            });
             $request['data']['professional_id'] = $professional->id;
             $subscription = (new Subscription)->store($request);
             return redirect('https://professional.avanzandojuntos.net');
@@ -247,7 +252,7 @@ class ProfessionalController extends Controller
     // PAYMENT METHOD
     function paymentMethodsIndex()
     {
-        $methods = ProfessionalPaymentMethod::with('professional')->where('professional_id', auth('professional_api')->id())->get();
+        $methods = ProfessionalPaymentMethod::with('professional')->where('professional_id', auth('professional_api')->id())->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$methods]);
     }
 

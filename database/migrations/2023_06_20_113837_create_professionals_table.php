@@ -26,11 +26,13 @@ return new class extends Migration
             $table->string('reset_token')->nullable();
             $table->string('auth_token')->nullable();
             $table->longText('access_token')->nullable();
+            $table->tinyInteger('email_verified')->default(0);
             $table->tinyInteger('status')->default(0);
             $table->tinyInteger('is_featured')->default(0)->nullable();
             $table->string('featured_payment_id')->nullable();
             $table->dateTime('featured_date')->nullable();
             $table->enum('featured_payment_status', ['pending', 'paid'])->nullable();
+            $table->tinyInteger('is_viewed')->default(0);
             $table->timestamps();
         });
     }

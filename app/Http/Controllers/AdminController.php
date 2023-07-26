@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginAdminRequest;
 use App\Models\Admin;
-use App\Models\Doctor;
-use App\Models\Subadmin;
 use App\Models\User;
+use App\Models\Professional;
+use App\Models\Business;
+use App\Models\Subadmin;
+use App\Models\Advertisement;
+use App\Models\Post;
+use App\Models\Subscription;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
@@ -22,13 +26,22 @@ class AdminController extends Controller
         if ($login['attempt']) 
         {
             $data = auth($login['role'])->user();
-            if($login['role'] == 'carehome' && !(new Admin)->checkCarehomeApproveStatus($data->id)) return response()->json(['status' => false, 'error' => 'Account Not Approved']);
-            if($login['role'] == 'professional' && !(new Admin)->checkProfessionalApproveStatus($data->id)) return response()->json(['status' => false, 'error' => 'Account Not Approved']);
-            if($login['role'] == 'user' && !(new Admin)->checkUserApproveStatus($data->id)) return response()->json(['status' => false, 'error' => 'Account Not Approved']);
-            if($login['role'] == 'business' && !(new Admin)->checkBusinessApproveStatus($data->id)) return response()->json(['status' => false, 'error' => 'Account Not Approved']);
+            if($login['role'] == 'carehome') 
+            { 
+                if(!(new Admin)->checkCarehomeApproveStatus($data->id)) return response()->json(['status' => false, 'error' => 'Account Not Approved']);
+                
+                // CHECKING SUBSCRIPTION
+                $is_subscribed = false;
+                $subscriptionExists = Subscription::where(['creatable_type'=>'App\Models\User', 'creatable_id'=>auth('carehome_api')->id()])->exists();
+                if($subscriptionExists) $is_subscribed = true;
+            }
+            if($login['role'] == 'professional' && (!(new Admin)->checkProfessionalApproveStatus($data->id) || !(new Admin)->emailVerified($login['role'],$data->id))) return response()->json(['status' => false, 'error' => 'Account Not Approved Or Email not verified']);
+            if($login['role'] == 'user' && (!(new Admin)->checkUserApproveStatus($data->id) || !(new Admin)->emailVerified($login['role'],$data->id))) return response()->json(['status' => false, 'error' => 'Account Not Approved Or Email not verified']);
+            if($login['role'] == 'business' && (!(new Admin)->checkBusinessApproveStatus($data->id) || !(new Admin)->emailVerified($login['role'],$data->id))) return response()->json(['status' => false, 'error' => 'Account Not Approved Or Email not verified']);
             if($login['role'] == 'subadmin' && !(new Admin)->checkSubadminApproveStatus($data->id)) return response()->json(['status' => false, 'error' => 'Account Not Approved']);
             $data->update(['access_token' => $data->createToken('Access Token For '.$login['role'])->accessToken]);
             $data['role'] = $login['role'];
+            if($login['role'] == 'carehome') $data['is_subscribed'] = $is_subscribed;
             $status = true;
         }
 
@@ -89,39 +102,106 @@ class AdminController extends Controller
         return response(['status' => false, 'errors' => 'Token Incorrect Or Token Expired']);
     }
 
-    function activeDeactive($subadmin)
-    {
-        $subadmin = Subadmin::find($subadmin);
-        if($subadmin->status) 
-        {
-            $subadmin->update(['status'=>0]);
-            return ['status'=>true, 'response'=>"Status changed to deactive"];
+    function emailVerify($role, $id)
+    {   
+        switch ($role) {
+            case 'user':
+                $user = User::find($id);
+                if($user->email_verified == 0)
+                {
+                    $user->update(['email_verified'=>1]);
+        
+                    Mail::raw("Thank You For Verification", function ($message) use ($user) 
+                    {
+                        $message->to($user->email)->subject('Email Verified');
+                        $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+                    });
+                    return response()->json(['status'=>true, 'response'=>"Email Verified"]);
+                }
+                return response()->json(['status'=>true, 'response'=>"Already verified"]);
+                break;
+
+            case 'professional':
+                $professional = Professional::find($id);
+                if($professional->email_verified == 0)
+                {
+                    $professional->update(['email_verified'=>1]);
+        
+                    Mail::raw("Thank You For Verification", function ($message) use ($professional) 
+                    {
+                        $message->to($professional->email)->subject('Email Verified');
+                        $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+                    });
+                    return response()->json(['status'=>true, 'response'=>"Email Verified"]);
+                }
+                return response()->json(['status'=>true, 'response'=>"Already verified"]);
+                break;
+
+            case 'business':
+                $business = Business::find($id);
+                if($business->email_verified == 0)
+                {
+                    $business->update(['email_verified'=>1]);
+        
+                    Mail::raw("Thank You For Verification", function ($message) use ($business) 
+                    {
+                        $message->to($business->email)->subject('Email Verified');
+                        $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+                    });
+                    return response()->json(['status'=>true, 'response'=>"Email Verified"]);
+                }
+                return response()->json(['status'=>true, 'response'=>"Already verified"]);
+                break;
         }
-        $subadmin->update(['status'=>1]);
-        return ['status'=>true, 'response'=>"Status changed to active"];
     }
 
-    function activeDeactiveDoctor($doctor)
+    function dashboard()
     {
-        $doctor = Doctor::find($doctor);
-        if($doctor->status) 
-        {
-            $doctor->update(['status'=>0]);
-            return ['status'=>true, 'response'=>"Status changed to deactive"];
-        }
-        $doctor->update(['status'=>1]);
-        return ['status'=>true, 'response'=>"Status changed to active"];
+        $data = [];
+        $data['users'] = User::count();
+        $data['professionals'] = Professional::count();
+        $data['business'] = Business::count();
+        $data['subadmins'] = Subadmin::count();
+        $data['blogs'] = Post::count();
+        $data['advertisements'] = Advertisement::count();
+        return response()->json(['status'=>true, 'data'=>$data]);
     }
 
-    function activeDeactiveUser($user)
+    function isViewed()
     {
-        $user = User::find($user);
-        if($user->status) 
-        {
-            $user->update(['status'=>0]);
-            return ['status'=>true, 'response'=>"Status changed to deactive"];
-        }
-        $user->update(['status'=>1]);
-        return ['status'=>true, 'response'=>"Status changed to active"];
+        $data = [];
+        $data['users'] = User::where('is_viewed', 0)->count();
+        $data['professionals'] = Professional::where('is_viewed', 0)->count();
+        $data['business'] = Business::where('is_viewed', 0)->count();
+        $data['subadmins'] = Subadmin::where('is_viewed', 0)->count();
+        $data['blogs'] = Post::where('is_viewed', 0)->count();
+        $data['advertisements'] = Advertisement::where('is_viewed', 0)->count();
+        return response()->json(['status'=>true, 'data'=>$data]);
     }
+
+    function isViewedUpdate($type)
+    {
+        switch($type)
+        {
+            case 'users';
+                User::where('is_viewed', 0)->update(['is_viewed'=>1]);
+            break;
+            case 'professionals';
+                Professional::where('is_viewed', 0)->update(['is_viewed'=>1]);
+            break;
+            case 'business';
+                Business::where('is_viewed', 0)->update(['is_viewed'=>1]);
+            break;
+            case 'subadmins';
+                Subadmin::where('is_viewed', 0)->update(['is_viewed'=>1]);
+            break;
+            case 'blogs';
+                Post::where('is_viewed', 0)->update(['is_viewed'=>1]);
+            break;
+            case 'advertisements';
+                Advertisement::where('is_viewed', 0)->update(['is_viewed'=>1]);
+            break;
+        }
+        return response()->json(['status'=>true, 'response'=>'Updated']);
+    } 
 }

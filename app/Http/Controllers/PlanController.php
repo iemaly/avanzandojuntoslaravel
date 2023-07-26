@@ -14,7 +14,7 @@ class PlanController extends Controller
         $permission = Admin::permission('Plan', 'index', auth('subadmin_api')->id());
         if(!$permission['status']) return $permission;
         
-        $plans = Plan::all();
+        $plans = Plan::orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$plans]);
     }
 

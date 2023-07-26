@@ -31,7 +31,7 @@ class CareHomeController extends Controller
         $permission = Admin::permission('CareHome', 'index', auth('subadmin_api')->id());
         if(!$permission['status']) return $permission;
 
-        $carehomes = CareHome::with('media', 'buildings.floors.beds')->get();
+        $carehomes = CareHome::with('media', 'buildings.floors.beds')->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$carehomes]);
     }
 
@@ -427,7 +427,7 @@ class CareHomeController extends Controller
         if(!$permission['status']) return $permission;
         
         $carehomeId = request()->carehome_id??auth('carehome_api')->id();
-        $buildings = Building::with('carehome')->where('carehome_id', $carehomeId)->get();
+        $buildings = Building::with('carehome')->where('carehome_id', $carehomeId)->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$buildings]);
     }
 
@@ -437,7 +437,7 @@ class CareHomeController extends Controller
         $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
         if(!$permission['status']) return $permission;
         
-        $floors = Floor::where('building_id', $building)->get();
+        $floors = Floor::where('building_id', $building)->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$floors]);
     }
 
@@ -447,7 +447,7 @@ class CareHomeController extends Controller
         $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
         if(!$permission['status']) return $permission;
         
-        $beds = Bed::with('floor.building')->where('floor_id', $floor)->get();
+        $beds = Bed::with('floor.building')->where('floor_id', $floor)->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$beds]);
     }
 

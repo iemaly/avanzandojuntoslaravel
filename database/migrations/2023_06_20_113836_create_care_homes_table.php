@@ -35,6 +35,7 @@ return new class extends Migration
             $table->string('featured_payment_id')->nullable();
             $table->dateTime('featured_date')->nullable();
             $table->enum('featured_payment_status', ['pending', 'paid'])->nullable();
+            $table->tinyInteger('is_viewed')->default(0);
             $table->timestamps();
         });
     }

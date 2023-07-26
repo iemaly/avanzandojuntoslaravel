@@ -22,6 +22,7 @@ return new class extends Migration
             $table->longText('post')->nullable();
             $table->string('image')->nullable();
             $table->tinyInteger('status')->default(0)->nullable();
+            $table->tinyInteger('is_viewed')->default(0);
             $table->timestamps();
         });
     }

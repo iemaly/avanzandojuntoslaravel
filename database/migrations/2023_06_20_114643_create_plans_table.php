@@ -25,6 +25,7 @@ return new class extends Migration
             $table->enum('duration_type', ['day', 'week', 'month'])->nullable();
             $table->bigInteger('duration')->nullable();
             $table->double('price')->nullable();
+            $table->tinyInteger('is_viewed')->default(0);
             $table->timestamps();
         });
     }

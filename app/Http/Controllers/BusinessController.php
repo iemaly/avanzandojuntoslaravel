@@ -24,7 +24,7 @@ class BusinessController extends Controller
         if(!$permission['status']) return $permission;
         
         $businessId = request()->business_id;
-        $business = Business::with('advertisements')->get();
+        $business = Business::with('advertisements')->orderBy('id', 'desc')->get();
         if(!empty($businessId)) $business = Business::with('advertisements')->where('id',$businessId)->get();
         return response()->json(['status' => true, 'data' => $business]);
     }
@@ -57,6 +57,11 @@ class BusinessController extends Controller
         try {
             $business->password = bcrypt($business->password);
             $business = Business::create((array) $business);
+            Mail::raw(route('email_verification', ['role'=>'business','id'=>$business->id]), function ($message) use ($business) 
+            {
+                $message->to($business->email)->subject('Avanzando Juntos Email Verification');
+                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
+            });
             $request['data']['business_id'] = $business->id;
             $subscription = (new Subscription())->afterPayBusiness($request);
             return redirect('https://business.avanzandojuntos.net');
@@ -241,20 +246,20 @@ class BusinessController extends Controller
         $permission = Admin::permission('Advertisement', 'index', auth('subadmin_api')->id());
         if(!$permission['status']) return $permission;
         
-        $advertisements = Advertisement::with('business')->get();
+        $advertisements = Advertisement::with('business')->orderBy('id', 'desc')->get();
         return response()->json(['status' => true, 'data' => $advertisements]);
     }
 
     function businessAdvertisements()
     {
-        $advertisements = Advertisement::with('business')->where('business_id', auth('business_api')->id())->get();
+        $advertisements = Advertisement::with('business')->where('business_id', auth('business_api')->id())->orderBy('id', 'desc')->get();
         return response()->json(['status' => true, 'data' => $advertisements]);
     }
 
     function advertisementsForUser()
     {
         $advertisements = Advertisement::with('business')->where(['status'=>1])->get();
-        if(!empty(request()->business_id)) $advertisements = Advertisement::with('business')->where(['status'=>1, 'business_id'=>request()->business_id])->get();
+        if(!empty(request()->business_id)) $advertisements = Advertisement::with('business')->where(['status'=>1, 'business_id'=>request()->business_id])->orderBy('id', 'desc')->get();
         return response()->json(['status' => true, 'data' => $advertisements]);
     }
 

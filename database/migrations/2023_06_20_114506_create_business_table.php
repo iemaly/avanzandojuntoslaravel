@@ -22,7 +22,9 @@ return new class extends Migration
             $table->string('reset_token')->nullable();
             $table->string('auth_token')->nullable();
             $table->longText('access_token')->nullable();
+            $table->tinyInteger('email_verified')->default(0);
             $table->tinyInteger('status')->default(0);
+            $table->tinyInteger('is_viewed')->default(0);
             $table->timestamps();
         });
     }

@@ -113,38 +113,41 @@ Route::group(['middleware' => 'auth:user_api', 'prefix' => 'user'], function ()
 // CAREHOME
 Route::group(['middleware' => 'auth:carehome_api', 'prefix' => 'carehome'], function () 
 {
-    // PROFILE UPDATE
-    Route::post('update/profile_pic', [App\Http\Controllers\CareHomeController::class, 'profilePicUpdate']);
-    Route::delete('delete/profile_pic', [App\Http\Controllers\CareHomeController::class, 'deleteProfilePic']);
-    
-    // DOCUMENT
-    Route::post('upload/media', [App\Http\Controllers\CareHomeController::class, 'addMedia']);
-    Route::delete('delete/document/{document}', [App\Http\Controllers\CareHomeController::class, 'deleteDocument']);
+    Route::group(['middleware' => 'subscribed_carehome'], function () 
+    {
+        // PROFILE UPDATE
+        Route::post('update/profile_pic', [App\Http\Controllers\CareHomeController::class, 'profilePicUpdate']);
+        Route::delete('delete/profile_pic', [App\Http\Controllers\CareHomeController::class, 'deleteProfilePic']);
+        
+        // DOCUMENT
+        Route::post('upload/media', [App\Http\Controllers\CareHomeController::class, 'addMedia']);
+        Route::delete('delete/document/{document}', [App\Http\Controllers\CareHomeController::class, 'deleteDocument']);
 
-    // PROFILE UPDATE
-    Route::put('update/{carehome}', [App\Http\Controllers\CareHomeController::class, 'update']);
+        // PROFILE UPDATE
+        Route::put('update/{carehome}', [App\Http\Controllers\CareHomeController::class, 'update']);
 
-    // CONVERSATION
-    Route::get('conversations', [App\Http\Controllers\ConversationController::class, 'indexForCarehome']);
-    Route::post('conversations', [App\Http\Controllers\ConversationController::class, 'store']);
-    Route::get('conversations/{participant}', [App\Http\Controllers\ConversationController::class, 'show']);
-    Route::post('conversations/update/{participant}/{sender_type}', [App\Http\Controllers\ConversationController::class, 'update']);
-    
-    // BLUEPRINT
-    Route::get('buildings', [App\Http\Controllers\CareHomeController::class, 'buildings']);
-    Route::get('floors/{building}', [App\Http\Controllers\CareHomeController::class, 'floors']);
-    Route::get('beds/{floor}', [App\Http\Controllers\CareHomeController::class, 'beds']);
-    Route::post('buildings', [App\Http\Controllers\CareHomeController::class, 'storeBuilding']);
-    Route::post('floors', [App\Http\Controllers\CareHomeController::class, 'storeFloor']);
-    Route::post('beds', [App\Http\Controllers\CareHomeController::class, 'storeBed']);
-    Route::post('store_single_floor/{building}', [App\Http\Controllers\CareHomeController::class, 'storeSingleFloor']);
-    Route::post('store_single_bed/{floor}', [App\Http\Controllers\CareHomeController::class, 'storeSingleBed']);
-    Route::delete('delete_building/{building}', [App\Http\Controllers\CareHomeController::class, 'destroyBuilding']);
-    Route::delete('delete_floor/{floor}', [App\Http\Controllers\CareHomeController::class, 'destroyFloor']);
-    Route::delete('delete_bed/{bed}', [App\Http\Controllers\CareHomeController::class, 'destroyBed']);
+        // CONVERSATION
+        Route::get('conversations', [App\Http\Controllers\ConversationController::class, 'indexForCarehome']);
+        Route::post('conversations', [App\Http\Controllers\ConversationController::class, 'store']);
+        Route::get('conversations/{participant}', [App\Http\Controllers\ConversationController::class, 'show']);
+        Route::post('conversations/update/{participant}/{sender_type}', [App\Http\Controllers\ConversationController::class, 'update']);
+        
+        // BLUEPRINT
+        Route::get('buildings', [App\Http\Controllers\CareHomeController::class, 'buildings']);
+        Route::get('floors/{building}', [App\Http\Controllers\CareHomeController::class, 'floors']);
+        Route::get('beds/{floor}', [App\Http\Controllers\CareHomeController::class, 'beds']);
+        Route::post('buildings', [App\Http\Controllers\CareHomeController::class, 'storeBuilding']);
+        Route::post('floors', [App\Http\Controllers\CareHomeController::class, 'storeFloor']);
+        Route::post('beds', [App\Http\Controllers\CareHomeController::class, 'storeBed']);
+        Route::post('store_single_floor/{building}', [App\Http\Controllers\CareHomeController::class, 'storeSingleFloor']);
+        Route::post('store_single_bed/{floor}', [App\Http\Controllers\CareHomeController::class, 'storeSingleBed']);
+        Route::delete('delete_building/{building}', [App\Http\Controllers\CareHomeController::class, 'destroyBuilding']);
+        Route::delete('delete_floor/{floor}', [App\Http\Controllers\CareHomeController::class, 'destroyFloor']);
+        Route::delete('delete_bed/{bed}', [App\Http\Controllers\CareHomeController::class, 'destroyBed']);
 
-    // FEATURE
-    Route::post('apply/feature', [App\Http\Controllers\CareHomeController::class, 'requestFeature']);
+        // FEATURE
+        Route::post('apply/feature', [App\Http\Controllers\CareHomeController::class, 'requestFeature']);
+    });
     
 });
 
@@ -322,3 +325,11 @@ Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessContr
 // VIDEO CALLING
 Route::post('/create-room', [App\Http\Controllers\VideoCallController::class, 'createRoom']);
 Route::post('/generate-token', [App\Http\Controllers\VideoCallController::class, 'generateToken']);
+
+// EMAIL VERIFICATION
+Route::get('verify_email/{role}/{id}', [App\Http\Controllers\AdminController::class, 'emailVerify'])->name('email_verification');
+
+// COUNT
+Route::get('dashboard', [App\Http\Controllers\AdminController::class, 'dashboard']);
+Route::get('is_viewed', [App\Http\Controllers\AdminController::class, 'isViewed']);
+Route::post('is_viewed/{type}', [App\Http\Controllers\AdminController::class, 'isViewedUpdate']);

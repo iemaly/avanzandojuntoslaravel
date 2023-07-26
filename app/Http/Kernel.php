@@ -56,6 +56,7 @@ class Kernel extends HttpKernel
      * @var array<string, class-string|string>
      */
     protected $routeMiddleware = [
+        'subscribed_carehome' => \App\Http\Middleware\isSubscribedCarehome::class,
         'subscribed_user' => \App\Http\Middleware\UserSubscribed::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('professional_id')->nullable();
             $table->foreign('professional_id')->references('id')->on('professionals')->onDelete('cascade');
+            $table->tinyInteger('is_viewed')->default(0);
             $table->timestamps();
         });
     }

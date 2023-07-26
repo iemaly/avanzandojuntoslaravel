@@ -19,7 +19,7 @@ class SubadminController extends Controller
 
     function index()
     {
-        $subadmins = Subadmin::with('permissions.permission')->get();
+        $subadmins = Subadmin::with('permissions.permission')->orderBy('id', 'desc')->get();
         return response()->json(['status' => true, 'data' => $subadmins]);
     }
 

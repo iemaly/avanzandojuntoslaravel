@@ -22,10 +22,10 @@ class PostController extends Controller
             $type = request()->input('type');
         
             // Add the 'where' condition to the query using the 'type' value
-            $posts = $business==null?Post::with('business')->where('type', $type)->get(S):Post::with('business')->where(['business_id'=>$business, 'type'=>$type])->get();
+            $posts = $business==null?Post::with('business')->where('type', $type)->orderBy('id', 'desc')->get(5):Post::with('business')->where(['business_id'=>$business, 'type'=>$type])->orderBy('id', 'desc')->get();
         } else {
             // If the 'type' parameter doesn't exist, execute the original query without the 'where' condition
-            $posts = $business==null?Post::with('business')->get():Post::with('business')->where('business_id', $business)->get();
+            $posts = $business==null?Post::with('business')->orderBy('id', 'desc')->get():Post::with('business')->where('business_id', $business)->orderBy('id', 'desc')->get();
         }
         return response()->json(['status'=>true, 'data'=>$posts]);
     }
@@ -37,10 +37,10 @@ class PostController extends Controller
             $type = request()->input('type');
         
             // Add the 'where' condition to the query using the 'type' value
-            $posts = Post::with('business')->where(['status'=>1,'type'=>$type])->paginate(3);
+            $posts = Post::with('business')->where(['status'=>1,'type'=>$type])->orderBy('id', 'desc')->paginate(3);
         } else {
             // If the 'type' parameter doesn't exist, execute the original query without the 'where' condition
-            $posts = Post::with('business')->where('status',1)->paginate(3);
+            $posts = Post::with('business')->where('status',1)->orderBy('id', 'desc')->paginate(3);
         }
         return response()->json(['status'=>true, 'data'=>$posts]);
     }

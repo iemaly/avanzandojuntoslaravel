@@ -96,6 +96,30 @@ class Admin extends Authenticatable
         return ['status'=>true, 'role'=>$recordExists['role'], 'attempt'=>$attempt];
     }
 
+    function emailVerified($type,$id) : bool
+    {
+        switch ($type) {
+            case 'user':
+                $user = User::find($id);
+                if(!$user->email_verified) return false;
+                return true;
+                break;
+            case 'professional':
+                $professional = Professional::find($id);
+                if(!$professional->email_verified) return false;
+                return true;
+                break;
+            case 'business':
+                $business = Business::find($id);
+                if(!$business->email_verified) return false;
+                return true;
+                break;
+            default:
+                return false;
+                break;
+        }
+    }
+
     public function checkSubadminApproveStatus($id) : bool
     {
         $subadmin = Subadmin::find($id);
