@@ -7,6 +7,7 @@ use App\Http\Requests\StoreBuildingRequest;
 use App\Http\Requests\StoreCareHomeMediaRequest;
 use App\Http\Requests\StoreCareHomeRequest;
 use App\Http\Requests\StoreFloorRequest;
+use App\Http\Requests\StoreBlueprintRequest;
 use App\Http\Requests\UpdateCareHomeRequest;
 use App\Models\Admin;
 use App\Models\Bed;
@@ -31,7 +32,7 @@ class CareHomeController extends Controller
         $permission = Admin::permission('CareHome', 'index', auth('subadmin_api')->id());
         if(!$permission['status']) return $permission;
 
-        $carehomes = CareHome::with('media', 'buildings.floors.beds')->orderBy('id', 'desc')->get();
+        $carehomes = CareHome::with('media', 'buildings.floors.blueprint', 'buildings.floors.beds')->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$carehomes]);
     }
 
@@ -60,11 +61,7 @@ class CareHomeController extends Controller
     function storeByGet()
     {   
         $request = request()->all();
-        $carehome = json_decode($request['data']['carehome']);
         try {
-            $carehome->password = bcrypt($carehome->password);
-            $carehome = CareHome::create((array) $carehome);
-            $request['data']['carehome_id'] = $carehome->id;
             $subscription = (new Subscription())->afterPayCarehome($request);
             return redirect('https://carehomes.avanzandojuntos.net');
         } catch (\Throwable $th) {
@@ -96,7 +93,7 @@ class CareHomeController extends Controller
         $permission = Admin::permission('CareHome', 'show', auth('subadmin_api')->id());
         if(!$permission['status']) return $permission;
 
-        $carehome = Carehome::with('media', 'buildings.floors.beds')->find($carehome);
+        $carehome = Carehome::with('media', 'buildings.floors.blueprint', 'buildings.floors.beds')->find($carehome);
         return response()->json(['status'=>true, 'data'=>$carehome]);
     }
 
@@ -237,6 +234,32 @@ class CareHomeController extends Controller
         return response()->json(['status'=>true, 'response'=>'Document Deleted']);
     }
 
+    function storeBlueprint(StoreBlueprintRequest $request)
+    {
+        $request = $request->validated();
+
+        try{
+            $filePath = $this->uploadImage($request['blueprint'], 'uploads/carehome/blueprints');
+            $media['carehome_id']=auth('carehome_api')->id();
+            $media['type']='blueprint';
+            $media['document']=$filePath;
+            $blueprint = CareHomeMedia::create($media);
+    
+            // BUILDING
+            $building = Building::firstOrCreate(['title'=>auth('carehome_api')->user()->director],['carehome_id'=>auth('carehome_api')->id(), 'title'=>auth('carehome_api')->user()->director]);
+            
+            // FLOOR
+            $floor = Floor::where(['building_id'=>$building->id, 'title'=>$request['floor']])->first();
+            if($floor==null) $floor = Floor::create(['blueprint_id'=>$blueprint->id, 'building_id'=>$building->id, 'title'=>$request['floor']]);
+    
+            // BED
+            foreach($request['beds'] as $bed) Bed::create(['floor_id'=>$floor->id,  'x'=>$bed['x'], 'y'=>$bed['y'], 'title'=>$bed['title']]);
+            return response()->json(['status'=>true, 'response'=>'Record Created']);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
+    }
+
     // BLUEPRINT WORK
     function approveBlueprint($blueprint)
     {
@@ -250,6 +273,10 @@ class CareHomeController extends Controller
             if ($blueprint->status==0) 
             {
                 $blueprint->update(['status'=>1]);
+
+                $floor = Floor::where('blueprint_id', $blueprint->id)->first();
+                $floor->update(['status'=>1]);
+                $bed = Bed::where('floor_id', $floor->id)->update(['status'=>1]);
                 
                 Mail::raw("Blueprint Approved.", function ($message) use ($blueprint) 
                 {

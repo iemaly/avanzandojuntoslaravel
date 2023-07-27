@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('floor_id')->nullable();
             $table->foreign('floor_id')->references('id')->on('floors')->onDelete('cascade');
+            $table->string('x')->nullable();
+            $table->string('y')->nullable();
             $table->string('title')->nullable();
             $table->tinyInteger('status')->default(0);
             $table->timestamps();

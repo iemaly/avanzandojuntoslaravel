@@ -157,9 +157,9 @@ class Subscription extends Model
 
     function afterPayCarehome($data)
     {
-        $subscription = Subscription::where(['creatable_type'=>'App\Models\Carehome', 'creatable_id'=>$data['data']['carehome_id']])->first();
+        $subscription = Subscription::where(['creatable_type'=>'App\Models\Carehome', 'creatable_id'=>$data['data']['carehome']])->first();
         if($subscription!=null) return ['status'=>false, 'error'=>'Subscription already exists'];
-        Subscription::where('code', $data['data']['uniqueCode'])->update(['creatable_type'=>'App\Models\Carehome', 'creatable_id'=>$data['data']['carehome_id'], 'code'=>'']);
+        Subscription::where('code', $data['data']['uniqueCode'])->update(['creatable_type'=>'App\Models\Carehome', 'creatable_id'=>$data['data']['carehome'], 'code'=>'']);
         return ['status'=>true];
     }
 

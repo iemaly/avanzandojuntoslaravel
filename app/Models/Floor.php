@@ -19,4 +19,9 @@ class Floor extends Model
     {
         return $this->belongsTo(Building::class, 'building_id', 'id');
     }
+
+    public function blueprint()
+    {
+        return $this->belongsTo(CareHomeMedia::class, 'blueprint_id', 'id');
+    }
 }

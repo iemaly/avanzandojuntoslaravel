@@ -147,6 +147,9 @@ Route::group(['middleware' => 'auth:carehome_api', 'prefix' => 'carehome'], func
 
         // FEATURE
         Route::post('apply/feature', [App\Http\Controllers\CareHomeController::class, 'requestFeature']);
+        
+        // BLUEPRINT
+        Route::post('blueprint', [App\Http\Controllers\CareHomeController::class, 'storeBlueprint']);
     });
     
 });

@@ -9,6 +9,7 @@ use App\Models\Professional;
 use App\Models\Business;
 use App\Models\Subadmin;
 use App\Models\Advertisement;
+use App\Models\CareHome;
 use App\Models\Post;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Mail;
@@ -32,7 +33,7 @@ class AdminController extends Controller
                 
                 // CHECKING SUBSCRIPTION
                 $is_subscribed = false;
-                $subscriptionExists = Subscription::where(['creatable_type'=>'App\Models\User', 'creatable_id'=>auth('carehome_api')->id()])->exists();
+                $subscriptionExists = Subscription::where(['creatable_type'=>'App\Models\Carehome', 'creatable_id'=>auth('carehome')->id()])->exists();
                 if($subscriptionExists) $is_subscribed = true;
             }
             if($login['role'] == 'professional' && (!(new Admin)->checkProfessionalApproveStatus($data->id) || !(new Admin)->emailVerified($login['role'],$data->id))) return response()->json(['status' => false, 'error' => 'Account Not Approved Or Email not verified']);
@@ -170,6 +171,7 @@ class AdminController extends Controller
     function isViewed()
     {
         $data = [];
+        $data['carehomes'] = CareHome::where('is_viewed', 0)->count();
         $data['users'] = User::where('is_viewed', 0)->count();
         $data['professionals'] = Professional::where('is_viewed', 0)->count();
         $data['business'] = Business::where('is_viewed', 0)->count();
@@ -183,6 +185,9 @@ class AdminController extends Controller
     {
         switch($type)
         {
+            case 'carehomes';
+                CareHome::where('is_viewed', 0)->update(['is_viewed'=>1]);
+            break;
             case 'users';
                 User::where('is_viewed', 0)->update(['is_viewed'=>1]);
             break;
