@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('auth_token')->nullable();
             $table->longText('access_token')->nullable();
             $table->tinyInteger('status')->default(1);
+            $table->tinyInteger('is_viewed')->default(0);
             $table->timestamps();
         });
     }

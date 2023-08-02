@@ -37,6 +37,7 @@ class StoreBlueprintRequest extends FormRequest
     public function rules()
     {
         return [
+            'carehome' => 'nullable',
             'blueprint' => 'required|mimetypes:application/pdf,image/jpeg,image/png,image/jpg,image/gif|max:500000',
             'floor' => 'required',
             'beds' => 'required|array',

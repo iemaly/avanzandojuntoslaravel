@@ -17,7 +17,7 @@ class isSubscribedCarehome
      */
     public function handle(Request $request, Closure $next)
     {
-        $subscriptionExists = Subscription::where(['creatable_type'=>'App\Models\Carehome', 'creatable_id'=>auth('carehome')->id()])->exists();
+        $subscriptionExists = Subscription::where(['creatable_type'=>'App\Models\Carehome', 'creatable_id'=>auth('carehome_api')->id()])->exists();
         if(!$subscriptionExists) return response()->json(['status'=>false, 'error'=>'Buy subscription first']);
         return $next($request);
     }

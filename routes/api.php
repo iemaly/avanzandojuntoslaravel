@@ -66,6 +66,11 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
     Route::post('subadmin/activate/{subadmin}', [App\Http\Controllers\SubadminController::class, 'activate']);
     Route::get('permissions/{subadmin}', [App\Http\Controllers\SubadminController::class, 'assignPermission']);
     Route::post('permissions/{subadmin}', [App\Http\Controllers\SubadminController::class, 'savePermission']);
+
+    // BLUEPRINT
+    Route::post('carehome/blueprint', [App\Http\Controllers\CareHomeController::class, 'storeBlueprint']);
+
+    Route::post('carehome/update_n_send_password/{carehome}', [App\Http\Controllers\CareHomeController::class, 'setAndSendPassword']);
 });
 
 // USER

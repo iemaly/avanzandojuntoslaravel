@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('reset_token')->nullable();
             $table->string('auth_token')->nullable();
             $table->longText('access_token')->nullable();
-            $table->tinyInteger('status')->default(0)->nullable();
+            $table->tinyInteger('status')->default(1)->nullable();
             $table->tinyInteger('is_featured')->default(0)->nullable();
             $table->string('featured_payment_id')->nullable();
             $table->dateTime('featured_date')->nullable();

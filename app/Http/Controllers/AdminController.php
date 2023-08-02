@@ -108,7 +108,7 @@ class AdminController extends Controller
         switch ($role) {
             case 'user':
                 $user = User::find($id);
-                if($user->email_verified == 0)
+                if(!$user->email_verified)
                 {
                     $user->update(['email_verified'=>1]);
         
@@ -117,14 +117,14 @@ class AdminController extends Controller
                         $message->to($user->email)->subject('Email Verified');
                         $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                     });
-                    return response()->json(['status'=>true, 'response'=>"Email Verified"]);
+                    return redirect(env('USER_URL').'?email_verified=true');
                 }
-                return response()->json(['status'=>true, 'response'=>"Already verified"]);
+                return redirect(env('USER_URL').'?email_verified=true');
                 break;
 
             case 'professional':
                 $professional = Professional::find($id);
-                if($professional->email_verified == 0)
+                if(!$professional->email_verified)
                 {
                     $professional->update(['email_verified'=>1]);
         
@@ -133,14 +133,14 @@ class AdminController extends Controller
                         $message->to($professional->email)->subject('Email Verified');
                         $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                     });
-                    return response()->json(['status'=>true, 'response'=>"Email Verified"]);
+                    return redirect(env('PROFESSIONAL_URL').'?email_verified=true');
                 }
-                return response()->json(['status'=>true, 'response'=>"Already verified"]);
+                return redirect(env('PROFESSIONAL_URL').'?email_verified=true');
                 break;
 
             case 'business':
                 $business = Business::find($id);
-                if($business->email_verified == 0)
+                if(!$business->email_verified)
                 {
                     $business->update(['email_verified'=>1]);
         
@@ -149,9 +149,9 @@ class AdminController extends Controller
                         $message->to($business->email)->subject('Email Verified');
                         $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
                     });
-                    return response()->json(['status'=>true, 'response'=>"Email Verified"]);
+                    return redirect(env('BUSINESS_URL').'?email_verified=true');
                 }
-                return response()->json(['status'=>true, 'response'=>"Already verified"]);
+                return redirect(env('BUSINESS_URL').'?email_verified=true');
                 break;
         }
     }

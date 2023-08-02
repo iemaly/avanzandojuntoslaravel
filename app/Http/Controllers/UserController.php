@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SendUserEmailVerificationEvent;
 use App\Http\Requests\StoreBookBedRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
@@ -68,11 +69,8 @@ class UserController extends Controller
                 $request['image']=$imageName;
             }
             $user = User::create($request);
-            Mail::raw(route('email_verification', ['role'=>'user','id'=>$user->id]), function ($message) use ($user) 
-            {
-                $message->to($user->email)->subject('Avanzando Juntos Email Verification');
-                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-            });
+
+            event(new SendUserEmailVerificationEvent($user));
             return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$user]);
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
@@ -130,12 +128,12 @@ class UserController extends Controller
         {
             $user->update(['status'=>1]);
 
-            Mail::raw("https://avanzandojuntos.dev-bt.xyz/login", function ($message) use ($user) 
+            Mail::raw(env('USER_URL'), function ($message) use ($user) 
             {
                 $message->to($user->email)->subject('Account Approved');
                 $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
             });
-            return response()->json(['status'=>true, 'response'=>"Account approved and mail sent to professional"]);
+            return response()->json(['status'=>true, 'response'=>"Account approved and mail sent to user"]);
         }
         $user->update(['status'=>0]);
         return response()->json(['status'=>true, 'response'=>"Account deactivated"]);

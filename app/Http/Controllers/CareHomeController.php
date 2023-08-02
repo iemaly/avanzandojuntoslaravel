@@ -9,6 +9,7 @@ use App\Http\Requests\StoreCareHomeRequest;
 use App\Http\Requests\StoreFloorRequest;
 use App\Http\Requests\StoreBlueprintRequest;
 use App\Http\Requests\UpdateCareHomeRequest;
+use App\Jobs\SendCredentialJob;
 use App\Models\Admin;
 use App\Models\Bed;
 use App\Models\Building;
@@ -22,6 +23,7 @@ use App\Models\Subscription;
 use Illuminate\Support\Facades\Mail;
 use App\Traits\ImageUploadTrait;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class CareHomeController extends Controller
 {
@@ -94,6 +96,14 @@ class CareHomeController extends Controller
         if(!$permission['status']) return $permission;
 
         $carehome = Carehome::with('media', 'buildings.floors.blueprint', 'buildings.floors.beds')->find($carehome);
+        if($carehome!=null)
+        {
+            // CHECKING SUBSCRIPTION
+            $is_subscribed = false;
+            $subscriptionExists = Subscription::where(['creatable_type'=>'App\Models\Carehome', 'creatable_id'=>$carehome->id])->exists();
+            if($subscriptionExists) $is_subscribed = true;
+            $carehome['is_subscribed'] = $is_subscribed;
+        }
         return response()->json(['status'=>true, 'data'=>$carehome]);
     }
 
@@ -240,13 +250,15 @@ class CareHomeController extends Controller
 
         try{
             $filePath = $this->uploadImage($request['blueprint'], 'uploads/carehome/blueprints');
-            $media['carehome_id']=auth('carehome_api')->id();
+            $carehome = $request['carehome']??auth('carehome_api')->id();
+            $carehome = CareHome::find($carehome);
+            $media['carehome_id']=$carehome->id;
             $media['type']='blueprint';
             $media['document']=$filePath;
             $blueprint = CareHomeMedia::create($media);
     
             // BUILDING
-            $building = Building::firstOrCreate(['title'=>auth('carehome_api')->user()->director],['carehome_id'=>auth('carehome_api')->id(), 'title'=>auth('carehome_api')->user()->director]);
+            $building = Building::firstOrCreate(['title'=>$carehome->director],['carehome_id'=>$carehome->id, 'title'=>$carehome->director]);
             
             // FLOOR
             $floor = Floor::where(['building_id'=>$building->id, 'title'=>$request['floor']])->first();
@@ -518,5 +530,21 @@ class CareHomeController extends Controller
     {
         CareHome::find($carehome)->update(['is_featured'=>0]);
         return response()->json(['status'=>true, 'response'=>'Carehome Unfeatured']);
+    }
+
+    function setAndSendPassword($carehome)
+    {
+        $allowedCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+        $randomPassword = Str::random(8, $allowedCharacters);
+        $encryptedPassword = bcrypt($randomPassword);
+        $carehome = CareHome::find($carehome);
+        $carehome->update(['password'=>$encryptedPassword]);
+
+        // SORTED DATA
+        $data = ['email'=>$carehome->email, 'password'=>$randomPassword];
+
+        // DISPATCHING JOB
+        SendCredentialJob::dispatch($data);
+        return response()->json(['status'=>true, 'response'=>'Credentials will be sent shortly.']);
     }
 }
