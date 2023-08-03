@@ -33,10 +33,11 @@ class ConversationParticipantController extends Controller
 
     function store(StoreConversationParticipantRequest $request)
     {
-        $request = $request->validated();
+        $request = $request->all();
         
         try {
-            $participants = ConversationParticipant::create($request);
+            $participants = ConversationParticipant::where(['user_id'=>$request['user_id'], 'carehome_id'=>$request['carehome_id']])->first();
+            if($participants==null) $participants = ConversationParticipant::create($request);
             $conversation = Conversation::create(['participant_id'=>$participants->id, 'sender_type'=>'user', 'body'=>'Hey there!']);
             $pusher = new Pusher(
                 env('PUSHER_APP_KEY'),
@@ -48,6 +49,7 @@ class ConversationParticipantController extends Controller
                 ]
             );
             $pusher->trigger('carehome-receive-message-'.$participants->carehome_id, 'user-send-message-'.$participants->user_id, ['message' => 'Hey There!']);
+            return $participants;
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
         }

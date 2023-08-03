@@ -103,7 +103,7 @@ class AdminController extends Controller
         return response(['status' => false, 'errors' => 'Token Incorrect Or Token Expired']);
     }
 
-    function emailVerify($role, $id)
+    protected function emailVerify($role, $id)
     {   
         switch ($role) {
             case 'user':
@@ -156,7 +156,7 @@ class AdminController extends Controller
         }
     }
 
-    function dashboard()
+    protected function dashboard()
     {
         $data = [];
         $data['users'] = User::count();
@@ -168,7 +168,7 @@ class AdminController extends Controller
         return response()->json(['status'=>true, 'data'=>$data]);
     }
 
-    function isViewed()
+    protected function isViewed()
     {
         $data = [];
         $data['carehomes'] = CareHome::where('is_viewed', 0)->count();
@@ -181,7 +181,7 @@ class AdminController extends Controller
         return response()->json(['status'=>true, 'data'=>$data]);
     }
 
-    function isViewedUpdate($type)
+    protected function isViewedUpdate($type)
     {
         switch($type)
         {

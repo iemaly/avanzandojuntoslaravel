@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SendUserEmailVerificationEvent;
 use App\Http\Requests\StoreAdvertisementRequest;
 use App\Http\Requests\StoreBusinessRequest;
 use App\Http\Requests\UpdateAdvertisementRequest;
@@ -57,11 +58,8 @@ class BusinessController extends Controller
         try {
             $business->password = bcrypt($business->password);
             $business = Business::create((array) $business);
-            Mail::raw(route('email_verification', ['role'=>'business','id'=>$business->id]), function ($message) use ($business) 
-            {
-                $message->to($business->email)->subject('Avanzando Juntos Email Verification');
-                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-            });
+            $business['role'] = 'business';
+            event(new SendUserEmailVerificationEvent($business));
             $request['data']['business_id'] = $business->id;
             $subscription = (new Subscription())->afterPayBusiness($request);
             return redirect('https://business.avanzandojuntos.net');

@@ -195,5 +195,11 @@ class Admin extends Authenticatable
         return ['status'=>true];
     }
 
+    // POLYMORPHIC RELATION
+    function addedUsers()
+    {
+        return $this->morphMany(User::class, 'added_by');
+    }
+
     // RELATIONS
 }

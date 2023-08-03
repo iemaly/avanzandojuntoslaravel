@@ -42,6 +42,7 @@ class StoreBookBedRequest extends FormRequest
             'date' => 'required|date',
             'end_date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
+            'life_time' => 'nullable|bool',
             'end_time' => ['required', 'date_format:H:i', new BookBedRule($this->bed_id, $this->date, $this->end_date, $this->start_time, $this->end_time)],
         ];
     }

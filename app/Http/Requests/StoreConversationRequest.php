@@ -38,9 +38,9 @@ class StoreConversationRequest extends FormRequest
     public function rules()
     {
         return [
-            'participant_id' => 'required|exists:conversation_participants,id',
-            'sender_type' => 'required|in:user,carehome',
-            'body' => 'required',
+            'participant_id' => 'nullable|exists:conversation_participants,id',
+            'sender_type' => 'nullable|in:user,carehome',
+            'body' => 'nullable',
         ];
     }
 }

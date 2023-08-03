@@ -113,6 +113,8 @@ Route::group(['middleware' => 'auth:user_api', 'prefix' => 'user'], function ()
     Route::post('book_bed', [App\Http\Controllers\UserController::class, 'bookBed']);
     Route::get('find_beds', [App\Http\Controllers\UserController::class, 'findBeds']);
     Route::get('find_bed_by_date', [App\Http\Controllers\UserController::class, 'findBedByDate']);
+
+    Route::get('inherit', [App\Http\Controllers\UserController::class, 'inherit']);
 });
 
 // CAREHOME
@@ -278,6 +280,9 @@ Route::group(['middleware' => 'auth:subadmin_api', 'prefix' => 'subadmin'], func
     Route::post('approve_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'approveAdvertisement']);
     Route::post('refuse_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'refuseAdvertisement']);
     Route::post('feature_unfeature_advertisement/{advertisement}', [App\Http\Controllers\BusinessController::class, 'featureUnfeature']);
+
+    // BLUEPRINT
+    Route::post('carehome/blueprint', [App\Http\Controllers\CareHomeController::class, 'storeBlueprint']);
 });
 
 // UNIVERSAL ROUTES
@@ -341,3 +346,5 @@ Route::get('verify_email/{role}/{id}', [App\Http\Controllers\AdminController::cl
 Route::get('dashboard', [App\Http\Controllers\AdminController::class, 'dashboard']);
 Route::get('is_viewed', [App\Http\Controllers\AdminController::class, 'isViewed']);
 Route::post('is_viewed/{type}', [App\Http\Controllers\AdminController::class, 'isViewedUpdate']);
+
+Route::get('buildings', [App\Http\Controllers\BuildingController::class, 'index']);

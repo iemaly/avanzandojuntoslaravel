@@ -49,6 +49,12 @@ class Subadmin extends Authenticatable
         return $this->hasMany(RolePermission::class, 'subadmin_id', 'id');
     }
 
+    // POLYMORPHIC RELATION
+    function addedUsers()
+    {
+        return $this->morphMany(User::class, 'added_by');
+    }
+
     // ACCESSOR
     protected function image(): Attribute
     {

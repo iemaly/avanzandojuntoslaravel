@@ -23,6 +23,7 @@ return new class extends Migration
             $table->date('end_date')->nullable();
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
+            $table->boolean('life_time')->default(0);
             $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });

@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Events\CarehomeBookingNotifyEvent;
 use App\Events\SendUserEmailVerificationEvent;
+use App\Listeners\CarehomeBookingNotifyListener;
 use App\Listeners\SendUserEmailVerificationListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -19,6 +21,9 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         SendUserEmailVerificationEvent::class => [
             SendUserEmailVerificationListener::class,
+        ],
+        CarehomeBookingNotifyEvent::class => [
+            CarehomeBookingNotifyListener::class,
         ],
     ];
 

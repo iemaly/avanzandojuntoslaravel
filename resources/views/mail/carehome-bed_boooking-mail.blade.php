@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Verification</title>
+    <title>Bed Booking</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,13 +44,11 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Email Verification - Avanzando Juntos</h1>
+            <h1>Bed Booking - Avanzando Juntos</h1>
         </div>
         <div class="content">
-            <p>Hello {{ $user->fname??$user->title }},</p>
-            <p>We are excited to welcome you to Avanzando Juntos! Please click the button below to verify your email address:</p>
-            <p><a class="button" href="{{ route('email_verification', ['role'=>$user->role,'id'=>$user->id]) }}">Verify Email</a></p>
-            <p>If you did not request this verification, you can safely ignore this email.</p>
+            <p>{{$data['body']}}</p>
+            <p><a class="button" href="{{ env('CAREHOME_URL') }}/Chat">Chat</a></p>
             <p>Thank you for choosing Avanzando Juntos!</p>
         </div>
         <div class="footer">

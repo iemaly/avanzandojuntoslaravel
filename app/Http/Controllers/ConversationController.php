@@ -45,7 +45,7 @@ class ConversationController extends Controller
      */
     function store(StoreConversationRequest $request)
     {
-        $request = $request->validated();
+        $request = $request->all();
         
         try {
             $conversation = Conversation::create($request);

@@ -2,18 +2,42 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CarehomeBookingNotifyEvent;
 use App\Events\SendUserEmailVerificationEvent;
 use App\Http\Requests\StoreBookBedRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\UserLoginRequest;
 use App\Models\Admin;
 use App\Models\BookBed;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\ConversationParticipantController;
+use App\Http\Controllers\ConversationController;
+use App\Http\Requests\StoreConversationParticipantRequest;
+use App\Http\Requests\StoreConversationRequest;
+use App\Models\Bed;
 
 class UserController extends Controller
 {
+
+    protected $conversationParticipantController;
+    protected $conversationController;
+
+    public function __construct(
+        ConversationParticipantController $conversationParticipantController,
+        ConversationController $conversationController
+    ) {
+        $this->conversationParticipantController = $conversationParticipantController;
+        $this->conversationController = $conversationController;
+    }
+
+    // function inherit(UserLoginRequest $request)
+    // {
+    //     return $this->login($request);
+    // }
+    
     /**
      * Display a listing of the resource.
      *
@@ -69,9 +93,10 @@ class UserController extends Controller
                 $request['image']=$imageName;
             }
             $user = User::create($request);
+            $user['role'] = 'user';
 
             event(new SendUserEmailVerificationEvent($user));
-            return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$user]);
+            return response()->json(['status'=>true, 'response'=>'Welcome To Avanzando Juntos. Now please verify your email so admin will make your account active.', 'data'=>$user]);
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
         }
@@ -147,6 +172,16 @@ class UserController extends Controller
         try {
             $request['user_id'] = auth('user_api')->id();
             $booking = BookBed::create($request);
+            $bed = Bed::find($booking->bed_id);
+            $data['body'] = 'Greetings.. Bed #'.$bed->title.' is booked discuss the further details with user';
+            $data['carehome'] = $bed->floor->building->carehome;
+
+            // INITIATING CHAT
+            $participant = $this->conversationParticipantController->store(new StoreConversationParticipantRequest(['user_id'=>$booking->user_id,'carehome_id'=>$bed->floor->building->carehome->id]));
+            $this->conversationController->store(new StoreConversationRequest(['participant_id'=>$participant->id, 'sender_type'=>'user', 'body'=>$data['body']]));
+
+            // EMAIL
+            event(new CarehomeBookingNotifyEvent($data));
             return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$booking]);
         } catch (\Throwable $th) {
             return response()->json(['status'=>false, 'error'=>$th->getMessage()]);

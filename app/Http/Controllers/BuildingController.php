@@ -15,7 +15,8 @@ class BuildingController extends Controller
      */
     public function index()
     {
-        //
+        $building = Building::find(2);
+        return $building->beds;
     }
 
     /**

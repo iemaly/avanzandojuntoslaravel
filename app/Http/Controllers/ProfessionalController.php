@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SendUserEmailVerificationEvent;
 use App\Http\Requests\StoreProfessionalDocumentRequest;
 use App\Http\Requests\StoreProfessionalPaymentMethodRequest;
 use App\Http\Requests\StoreProfessionalRequest;
@@ -61,11 +62,8 @@ class ProfessionalController extends Controller
         try {
             $professional->password = bcrypt($professional->password);
             $professional = Professional::create((array) $professional);
-            Mail::raw(route('email_verification', ['role'=>'professional','id'=>$professional->id]), function ($message) use ($professional) 
-            {
-                $message->to($professional->email)->subject('Avanzando Juntos Email Verification');
-                $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-            });
+            $professional['role'] = 'professional';
+            event(new SendUserEmailVerificationEvent($professional));
             $request['data']['professional_id'] = $professional->id;
             $subscription = (new Subscription)->store($request);
             return redirect('https://professional.avanzandojuntos.net');

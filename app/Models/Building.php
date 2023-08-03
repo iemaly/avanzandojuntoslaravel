@@ -20,4 +20,10 @@ class Building extends Model
     {
         return $this->hasMany(Floor::class, 'building_id', 'id');
     }
+
+    public function beds()
+    {
+        return $this->hasManyThrough(Bed::class, Floor::class);
+    }
+    
 }

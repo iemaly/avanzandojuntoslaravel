@@ -38,8 +38,8 @@ class StoreConversationParticipantRequest extends FormRequest
     public function rules()
     {
         return [
-            'carehome_id' => 'required|exists:care_homes,id',
-            'user_id' => ['required','exists:users,id', new UniqueParticipant($this->carehome_id)],
+            'carehome_id' => 'nullable|exists:care_homes,id',
+            'user_id' => ['nullable','exists:users,id', new UniqueParticipant($this->carehome_id)],
         ];
     }
 }
