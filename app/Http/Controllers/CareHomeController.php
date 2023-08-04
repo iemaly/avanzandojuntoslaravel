@@ -258,7 +258,7 @@ class CareHomeController extends Controller
             $blueprint = CareHomeMedia::create($media);
     
             // BUILDING
-            $building = Building::firstOrCreate(['title'=>$carehome->director],['carehome_id'=>$carehome->id, 'title'=>$carehome->director]);
+            $building = Building::where(['title'=>$carehome->director, 'carehome_id'=>$carehome->id])->firstOrCreate(['carehome_id'=>$carehome->id, 'title'=>$carehome->director]);
             
             // FLOOR
             $floor = Floor::where(['building_id'=>$building->id, 'title'=>$request['floor']])->first();

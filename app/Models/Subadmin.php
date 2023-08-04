@@ -59,7 +59,7 @@ class Subadmin extends Authenticatable
     protected function image(): Attribute
     {
         return Attribute::make(
-            fn ($value) => !empty($value)?asset('uploads/subadmin/images/'.$value):'',
+            fn ($value) => !empty($value)?asset('uploads/subadmin/images/'.$value):asset('assets/profile_pics/subadmin.png'),
         );
     }
 }

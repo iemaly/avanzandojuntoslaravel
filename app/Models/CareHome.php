@@ -90,7 +90,7 @@ class CareHome extends Authenticatable
     protected function image(): Attribute
     {
         return Attribute::make(
-            fn ($value) => !empty($value)?asset($value):'',
+            fn ($value) => !empty($value)?asset($value):asset('assets/profile_pics/carehome.webp'),
         );
     }
 }

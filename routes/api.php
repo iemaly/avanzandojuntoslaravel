@@ -69,8 +69,12 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
 
     // BLUEPRINT
     Route::post('carehome/blueprint', [App\Http\Controllers\CareHomeController::class, 'storeBlueprint']);
+    Route::delete('delete/document/{document}', [App\Http\Controllers\CareHomeController::class, 'deleteDocument']);
 
     Route::post('carehome/update_n_send_password/{carehome}', [App\Http\Controllers\CareHomeController::class, 'setAndSendPassword']);
+
+    // TRANSLATOR
+    Route::resource('translations', 'App\Http\Controllers\TranslatorController');
 });
 
 // USER
@@ -348,3 +352,7 @@ Route::get('is_viewed', [App\Http\Controllers\AdminController::class, 'isViewed'
 Route::post('is_viewed/{type}', [App\Http\Controllers\AdminController::class, 'isViewedUpdate']);
 
 Route::get('buildings', [App\Http\Controllers\BuildingController::class, 'index']);
+
+// TRANSLATOR
+Route::get('translations', [App\Http\Controllers\TranslatorController::class, 'index']);
+Route::get('translations/{id}', [App\Http\Controllers\TranslatorController::class, 'show']);

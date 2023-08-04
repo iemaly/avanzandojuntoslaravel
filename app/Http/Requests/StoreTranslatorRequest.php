@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Elegant\Sanitizer\Laravel\SanitizesInput;
 
-class UpdateSubadminRequest extends FormRequest
+class StoreTranslatorRequest extends FormRequest
 {
     use SanitizesInput;
     
@@ -37,11 +37,10 @@ class UpdateSubadminRequest extends FormRequest
     public function rules()
     {
         return [
-            'fname' => 'required',
-            'lname' => 'nullable',
-            'email' => 'nullable|email|unique:subadmins,email,'.$this->subadmin->id,
-            'password' => 'required',
-            'image' => 'nullable',
+            'translate' => 'required|array',
+            'translate.*.title' => 'required',
+            'translate.*.en' => 'required',
+            'translate.*.es' => 'required',
         ];
     }
 }

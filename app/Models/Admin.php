@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 
 class Admin extends Authenticatable
 {
@@ -155,9 +157,9 @@ class Admin extends Authenticatable
         return true;
     }
 
-    public function setResetToken($email, $token)
+    public function setResetToken($email, $token, $type)
     {
-        if ($this->adminExists($email)) return $this->whereEmail($email)->update(['reset_token' => $token]);
+        if ($this->adminExists($email, $type)) return $this->whereEmail($email)->update(['reset_token' => $token]);
     }
 
     public function resetPassword($token, $password)
@@ -202,4 +204,12 @@ class Admin extends Authenticatable
     }
 
     // RELATIONS
+
+    // ACCESSOR
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            fn ($value) => !empty($value)?asset($value):asset('assets/profile_pics/admin.jpg'),
+        );
+    }
 }

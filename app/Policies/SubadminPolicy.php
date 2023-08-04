@@ -47,25 +47,20 @@ class SubadminPolicy
     /**
      * Determine whether the user can update the model.
      *
-     * @param  \App\Models\User  $user
+     * @param  \App\Models\Subadmin  $user
      * @param  \App\Models\Subadmin  $subadmin
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Subadmin $subadmin)
+    public function update(Subadmin $user, Subadmin $subadmin)
     {
-        //
+        dd(get_class($subadmin) == get_class($user));
+        dd($subadmin->id === $user->id, $user->id, $user, $subadmin->id, $subadmin);
+        return $subadmin->id === $user->id;
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Subadmin  $subadmin
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function delete(User $user, Subadmin $subadmin)
+    public function delete(Subadmin $user, Subadmin $subadmin)
     {
-        //
+        return $subadmin->id === $user->id();
     }
 
     /**

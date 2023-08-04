@@ -2,12 +2,11 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable
 {
@@ -46,5 +45,13 @@ class User extends Authenticatable
     function addedBy()
     {
         return $this->morphTo();
+    }
+
+    // ACCESSOR
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            fn ($value) => !empty($value)?asset($value):asset('assets/profile_pics/user.png'),
+        );
     }
 }

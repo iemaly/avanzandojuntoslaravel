@@ -41,12 +41,12 @@ class SubadminController extends Controller
         }
     }
 
-    function update(UpdateSubadminRequest $request, $subadmin)
+    function update(UpdateSubadminRequest $request, Subadmin $subadmin)
     {
+        // $this->authorize('update', $subadmin);
         $request = $request->validated();
 
         try {
-            $subadmin = Subadmin::find($subadmin);
             $subadmin->update($request);
             return response()->json(['status' => true, 'response' => 'Record Updated', 'data' => $subadmin]);
         } catch (\Throwable $th) {
@@ -60,9 +60,9 @@ class SubadminController extends Controller
         return response()->json(['status' => true, 'data' => $subadmin]);
     }
 
-    function destroy($subadmin)
+    function destroy(Subadmin $subadmin)
     {
-        return Subadmin::destroy($subadmin);
+        return Subadmin::destroy($subadmin->id);
     }
 
     function activate($subadmin)
