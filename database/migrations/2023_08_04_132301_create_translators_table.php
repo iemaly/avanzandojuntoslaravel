@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('translators', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->nullable();
-            $table->string('en')->nullable();
-            $table->string('es')->nullable();
+            $table->longText('title')->nullable();
+            $table->longText('en')->nullable();
+            $table->longText('es')->nullable();
             $table->timestamps();
         });
     }

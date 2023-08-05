@@ -51,8 +51,8 @@ class TranslatorController extends Controller
         return response()->json(['status' => true, 'data' => $Translator]);
     }
 
-    function destroy(Translator $Translator)
+    function destroy($t)
     {
-        return Translator::destroy($Translator->id);
+        return Translator::destroy($t);
     }
 }

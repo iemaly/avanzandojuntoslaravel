@@ -43,7 +43,7 @@ class SubadminController extends Controller
 
     function update(UpdateSubadminRequest $request, Subadmin $subadmin)
     {
-        // $this->authorize('update', $subadmin);
+        $this->authorize('update', $subadmin);
         $request = $request->validated();
 
         try {

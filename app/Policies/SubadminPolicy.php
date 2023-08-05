@@ -53,8 +53,6 @@ class SubadminPolicy
      */
     public function update(Subadmin $user, Subadmin $subadmin)
     {
-        dd(get_class($subadmin) == get_class($user));
-        dd($subadmin->id === $user->id, $user->id, $user, $subadmin->id, $subadmin);
         return $subadmin->id === $user->id;
     }
 
