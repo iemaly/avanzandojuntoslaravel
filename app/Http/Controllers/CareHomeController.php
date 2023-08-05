@@ -31,8 +31,7 @@ class CareHomeController extends Controller
 
     function index()
     {
-        $permission = Admin::permission('CareHome', 'index', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('viewAny', CareHome::class);
 
         $carehomes = CareHome::with('media', 'buildings.floors.blueprint', 'buildings.floors.beds')->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$carehomes]);
@@ -40,19 +39,19 @@ class CareHomeController extends Controller
 
     function store(StoreCareHomeRequest $request)
     {
-        $permission = Admin::permission('CareHome', 'store', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('create', CareHome::class);
 
         $request = $request->validated();
         
         try {
-            $request['password'] = bcrypt($request['password']);
-            if (!empty($request['image'])) 
+            !empty($request['password'])?$request['password'] = bcrypt($request['password']):'';
+            if (isset($request['image']) && $request['image']!='undefined') 
             {
                 $imageName = $request['image']->getClientOriginalName().'.'.$request['image']->extension();
                 $request['image']->move(public_path('uploads/carehome/images'), $imageName);
                 $request['image']=$imageName;
             }
+            if($request['image']=='undefined') unset($request['image']);
             $carehome = CareHome::create($request);
             return response()->json(['status'=>true, 'response'=>'Record Created', 'data'=>$carehome]);
         } catch (\Throwable $th) {
@@ -73,9 +72,7 @@ class CareHomeController extends Controller
 
     function update(UpdateCareHomeRequest $request, $carehome)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('update', CareHome::class);
 
         $request = $request->validated();
         
@@ -92,8 +89,7 @@ class CareHomeController extends Controller
 
     function show($carehome)
     {
-        $permission = Admin::permission('CareHome', 'show', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('view', CareHome::class);
 
         $carehome = Carehome::with('media', 'buildings.floors.blueprint', 'buildings.floors.beds')->find($carehome);
         if($carehome!=null)
@@ -109,17 +105,14 @@ class CareHomeController extends Controller
 
     function destroy($carehome)
     {
-        $permission = Admin::permission('CareHome', 'delete', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('delete', CareHome::class);
 
         return CareHome::destroy($carehome);
     }
 
     function bulk()
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('create', CareHome::class);
         
         $response = (new Carehome())->import(request()->sheet);
         return response()->json(['status'=>$response['status'], 'message'=>$response['status']===true?"Sheet Imported":$response['error']]);
@@ -127,9 +120,7 @@ class CareHomeController extends Controller
 
     function activate($carehome)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('update', CareHome::class);
                 
         $carehome = CareHome::find($carehome);
         if($carehome->status == 0)
@@ -275,9 +266,7 @@ class CareHomeController extends Controller
     // BLUEPRINT WORK
     function approveBlueprint($blueprint)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('update', CareHome::class);
         
         $blueprint = CareHomeMedia::with('carehome')->find($blueprint);
         if($blueprint->type=='blueprint')
@@ -303,9 +292,7 @@ class CareHomeController extends Controller
 
     function refuseBlueprint($blueprint)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('update', CareHome::class);
         
         $blueprint = CareHomeMedia::with('carehome')->find($blueprint);
         if($blueprint->type=='blueprint')
@@ -318,9 +305,7 @@ class CareHomeController extends Controller
 
     function storeBuilding(StoreBuildingRequest $request)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('update', CareHome::class);
         
         $request = $request->validated();
         
@@ -335,10 +320,8 @@ class CareHomeController extends Controller
 
     function storeFloor(StoreFloorRequest $request)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
-        
+        $this->authorize('update', CareHome::class);
+
         $request = $request->validated();
         $numberOfFloors = $request['number_of_floors'];
         $floorCount = 1;
@@ -358,10 +341,8 @@ class CareHomeController extends Controller
 
     function storeBed(StoreBedRequest $request)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
-        
+        $this->authorize('update', CareHome::class);
+
         $request = $request->validated();
         $numberOfBeds = $request['number_of_beds'];
         $bedCount = 1;
@@ -381,10 +362,8 @@ class CareHomeController extends Controller
 
     function storeSingleFloor($building)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
-           
+        $this->authorize('update', CareHome::class);
+   
         try {
             $building = Building::with('floors')->find($building);
             if(!$building->floors->isEmpty())
@@ -407,10 +386,8 @@ class CareHomeController extends Controller
 
     function storeSingleBed($floor)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
-           
+        $this->authorize('update', CareHome::class);
+
         try {
             $floor = Floor::with('beds')->find($floor);
             if(!$floor->beds->isEmpty())
@@ -433,38 +410,29 @@ class CareHomeController extends Controller
 
     function destroyBuilding($building)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
-        
+        $this->authorize('update', CareHome::class);
+
         return Building::destroy($building);
     }
 
     function destroyFloor($floor)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
-        
+        $this->authorize('update', CareHome::class);
+
         return Floor::destroy($floor);
     }
 
     function destroyBed($bed)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
-        
+        $this->authorize('update', CareHome::class);
+
         return Bed::destroy($bed);
     }
 
     function buildings()
     {
-        
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
-        
+        $this->authorize('update', CareHome::class);
+
         $carehomeId = request()->carehome_id??auth('carehome_api')->id();
         $buildings = Building::with('carehome')->where('carehome_id', $carehomeId)->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$buildings]);
@@ -472,20 +440,16 @@ class CareHomeController extends Controller
 
     function floors($building)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
-        
+        $this->authorize('update', CareHome::class);
+
         $floors = Floor::where('building_id', $building)->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$floors]);
     }
 
     function beds($floor)
     {
-        // PERMISSION
-        $permission = Admin::permission('CareHome', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
-        
+        $this->authorize('update', CareHome::class);
+
         $beds = Bed::with('floor.building')->where('floor_id', $floor)->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$beds]);
     }

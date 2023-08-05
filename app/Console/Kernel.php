@@ -5,9 +5,16 @@ namespace App\Console;
 use App\Jobs\SendCredentialJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Artisan;
 
 class Kernel extends ConsoleKernel
 {
+
+    protected $commands = [
+        // ...
+        \App\Console\Commands\RefreshDatabaseWithSeedAndIseed::class,
+    ];
     /**
      * Define the application's command schedule.
      *

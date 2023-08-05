@@ -13,6 +13,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
+        'App\Models\CareHome' => 'App\Policies\CareHomePolicy',
         'App\Models\User' => 'App\Policies\UserPolicy',
         'App\Models\Subadmin' => 'App\Policies\SubadminPolicy',
     ];

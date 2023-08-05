@@ -37,10 +37,9 @@ class UpdateTranslatorRequest extends FormRequest
     public function rules()
     {
         return [
-            'translate' => 'required|array',
-            'translate.*.title' => 'required',
-            'translate.*.en' => 'required',
-            'translate.*.es' => 'required',
+            'title' => 'required',
+            'en' => 'required',
+            'es' => 'required',
         ];
     }
 }

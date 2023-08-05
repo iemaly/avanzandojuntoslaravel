@@ -41,7 +41,7 @@ class StoreSubadminRequest extends FormRequest
             'lname' => 'nullable',
             'email' => 'nullable|email|unique:subadmins,email',
             'password' => 'required',
-            'image' => 'nullable',
+            'image' => 'nullable|file',
         ];
     }
 }

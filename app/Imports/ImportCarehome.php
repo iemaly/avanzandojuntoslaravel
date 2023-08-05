@@ -13,7 +13,7 @@ class ImportCarehome implements ToModel, WithHeadingRow
     {
         // VALIDATION
         Validator::make($row, [
-            // 'establishment' => 'nullable',
+            'establishment' => 'nullable',
             'director' => 'nullable',
             'address' => 'nullable',
             'town' => 'nullable',

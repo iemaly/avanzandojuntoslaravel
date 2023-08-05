@@ -37,6 +37,7 @@ class StoreCareHomeRequest extends FormRequest
     public function rules()
     {
         return [
+            'establishment' => 'nullable',
             'director' => 'nullable',
             'address' => 'nullable',
             'town' => 'nullable',
@@ -45,7 +46,7 @@ class StoreCareHomeRequest extends FormRequest
             'license' => 'nullable',
             'license_status' => 'nullable',
             'ability' => 'nullable',
-            'image' => 'nullable',
+            'image' => 'nullable|file',
             'password' => 'nullable',
             'pricing' => 'nullable',
         ];

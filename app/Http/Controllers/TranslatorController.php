@@ -33,13 +33,14 @@ class TranslatorController extends Controller
         }
     }
 
-    function update(UpdateTranslatorRequest $request, Translator $Translator)
+    function update(UpdateTranslatorRequest $request, $translate)
     {
         $request = $request->validated();
 
         try {
-            $Translator->update($request);
-            return response()->json(['status' => true, 'response' => 'Record Updated', 'data' => $Translator]);
+            $translator = Translator::find($translate);
+            $translator->update($request);
+            return response()->json(['status' => true, 'response' => 'Record Updated', 'data' => $translator]);
         } catch (\Throwable $th) {
             return response()->json(['status' => false, 'error' => $th->getMessage()]);
         }
