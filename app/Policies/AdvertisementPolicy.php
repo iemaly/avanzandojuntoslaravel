@@ -16,21 +16,25 @@ class AdvertisementPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'Advertisement' && $permission->permission->permission === 'index');
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Advertisement  $advertisement
+     * @param  \App\Models\Advertisement  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Advertisement $advertisement)
+    public function view()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'Advertisement' && $permission->permission->permission === 'show');
     }
 
     /**
@@ -39,43 +43,49 @@ class AdvertisementPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'Advertisement' && $permission->permission->permission === 'store');
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Advertisement  $advertisement
+     * @param  \App\Models\Advertisement  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Advertisement $advertisement)
+    public function update()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'Advertisement' && $permission->permission->permission === 'update');
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Advertisement  $advertisement
+     * @param  \App\Models\Advertisement  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Advertisement $advertisement)
+    public function delete()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'Advertisement' && $permission->permission->permission === 'delete');
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Advertisement  $advertisement
+     * @param  \App\Models\Advertisement  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Advertisement $advertisement)
+    public function restore()
     {
         //
     }
@@ -84,10 +94,10 @@ class AdvertisementPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\Advertisement  $advertisement
+     * @param  \App\Models\Advertisement  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Advertisement $advertisement)
+    public function forceDelete()
     {
         //
     }

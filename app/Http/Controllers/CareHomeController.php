@@ -10,15 +10,11 @@ use App\Http\Requests\StoreFloorRequest;
 use App\Http\Requests\StoreBlueprintRequest;
 use App\Http\Requests\UpdateCareHomeRequest;
 use App\Jobs\SendCredentialJob;
-use App\Models\Admin;
 use App\Models\Bed;
 use App\Models\Building;
 use App\Models\CareHome;
 use App\Models\CareHomeMedia;
 use App\Models\Floor;
-use App\Models\Permission;
-use App\Models\RolePermission;
-use App\Models\Subadmin;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Mail;
 use App\Traits\ImageUploadTrait;
@@ -70,7 +66,7 @@ class CareHomeController extends Controller
         }
     }
 
-    function update(UpdateCareHomeRequest $request, $carehome)
+    function update(UpdateCareHomeRequest $request, $id)
     {
         $this->authorize('update', CareHome::class);
 
@@ -79,7 +75,7 @@ class CareHomeController extends Controller
         try {
             if(!empty($request['password'])) $request['password'] = bcrypt($request['password']); 
             else unset($request['password']);
-            $carehome = CareHome::find($carehome);
+            $carehome = CareHome::find($id);
             $carehome->update($request);
             return response()->json(['status'=>true, 'response'=>'Record Updated', 'data'=>$carehome]);
         } catch (\Throwable $th) {

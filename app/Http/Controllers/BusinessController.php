@@ -21,9 +21,8 @@ class BusinessController extends Controller
 
     function index()
     {
-        $permission = Admin::permission('Business', 'index', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
-        
+        $this->authorize('viewAny', Business::class);
+   
         $businessId = request()->business_id;
         $business = Business::with('advertisements')->orderBy('id', 'desc')->get();
         if(!empty($businessId)) $business = Business::with('advertisements')->where('id',$businessId)->get();
@@ -32,8 +31,7 @@ class BusinessController extends Controller
 
     function store(StoreBusinessRequest $request)
     {
-        $permission = Admin::permission('Business', 'store', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('create', Business::class);
         
         $request = $request->validated();
 
@@ -68,15 +66,14 @@ class BusinessController extends Controller
         }
     }
 
-    function update(UpdateBusinessRequest $request, $business)
+    function update(UpdateBusinessRequest $request, $id)
     {
-        $permission = Admin::permission('Business', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('update', Business::class);
         
         $request = $request->validated();
 
         try {
-            $business = Business::find($business);
+            $business = Business::find($id);
             $business->update($request);
             return response()->json(['status' => true, 'response' => 'Record Updated', 'data' => $business]);
         } catch (\Throwable $th) {
@@ -86,8 +83,7 @@ class BusinessController extends Controller
 
     function show($business)
     {
-        $permission = Admin::permission('Business', 'show', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('view', Business::class);
         
         $business = Business::find($business);
         return response()->json(['status' => true, 'data' => $business]);
@@ -95,14 +91,15 @@ class BusinessController extends Controller
 
     function destroy($business)
     {
-        $permission = Admin::permission('Business', 'delete', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('delete', Business::class);
         
         return Business::destroy($business);
     }
 
     function activate($business)
     {
+        $this->authorize('update', Business::class);
+
         $business = Business::find($business);
         if($business->status == 0)
         {
@@ -165,8 +162,7 @@ class BusinessController extends Controller
     // ADVERTISEMENT
     function storeAdvertisement(StoreAdvertisementRequest $request)
     {
-        $permission = Admin::permission('Advertisement', 'store', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('create', Advertisement::class);
         
         $request = $request->validated();
 
@@ -225,8 +221,7 @@ class BusinessController extends Controller
 
     function updateAdvertisement(UpdateAdvertisementRequest $request, $advertisement)
     {
-        $permission = Admin::permission('Advertisement', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('update', Advertisement::class);
         
         $request = $request->validated();
 
@@ -241,8 +236,7 @@ class BusinessController extends Controller
 
     function advertisements()
     {
-        $permission = Admin::permission('Advertisement', 'index', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('viewAny', Advertisement::class);
         
         $advertisements = Advertisement::with('business')->orderBy('id', 'desc')->get();
         return response()->json(['status' => true, 'data' => $advertisements]);
@@ -263,8 +257,7 @@ class BusinessController extends Controller
 
     function advertisementShow($advertisement)
     {
-        $permission = Admin::permission('Advertisement', 'show', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('view', Advertisement::class);
         
         $advertisement = Advertisement::with('business')->find($advertisement);
         return response()->json(['status' => true, 'data' => $advertisement]);
@@ -272,16 +265,14 @@ class BusinessController extends Controller
 
     function destroyAdvertisement($advertisement)
     {
-        $permission = Admin::permission('Advertisement', 'delete', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('delete', Advertisement::class);
         
         return Advertisement::destroy($advertisement);
     }
 
     function approveAdvertisement($Advertisement)
     {
-        $permission = Admin::permission('Advertisement', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('update', Advertisement::class);
         
         $Advertisement = Advertisement::with('business')->find($Advertisement);
         if ($Advertisement->status==0) 
@@ -300,8 +291,7 @@ class BusinessController extends Controller
 
     function refuseAdvertisement($Advertisement)
     {
-        $permission = Admin::permission('Advertisement', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('update', Advertisement::class);
         
         $Advertisement = Advertisement::with('business')->find($Advertisement);
         if ($Advertisement->status==1) $Advertisement->update(['status'=>0]);
@@ -310,8 +300,7 @@ class BusinessController extends Controller
 
     function featureUnfeature($advertisement)
     {
-        $permission = Admin::permission('Advertisement', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('update', Advertisement::class);
         
         $advertisement = Advertisement::find($advertisement);
         if($advertisement->is_featured == 0)

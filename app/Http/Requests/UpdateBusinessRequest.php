@@ -38,7 +38,7 @@ class UpdateBusinessRequest extends FormRequest
     {
         return [
             'title' => 'required',
-            'email' => 'nullable|email|unique:business,email,'.$this->business,
+            'email' => 'nullable|email|unique:business,email,'.$this->id,
             'password' => 'required',
             'image' => 'nullable',
         ];

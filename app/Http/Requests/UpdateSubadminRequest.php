@@ -39,7 +39,7 @@ class UpdateSubadminRequest extends FormRequest
         return [
             'fname' => 'required',
             'lname' => 'nullable',
-            'email' => 'nullable|email|unique:subadmins,email,'.$this->subadmin->id,
+            'email' => 'nullable|email|unique:subadmins,email,'.$this->id,
             'password' => 'required',
             'image' => 'nullable',
         ];

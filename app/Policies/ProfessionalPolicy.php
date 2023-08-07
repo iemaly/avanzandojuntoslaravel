@@ -16,9 +16,11 @@ class ProfessionalPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'Professional' && $permission->permission->permission === 'index');
     }
 
     /**
@@ -28,9 +30,11 @@ class ProfessionalPolicy
      * @param  \App\Models\Professional  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Professional $professional)
+    public function view()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'Professional' && $permission->permission->permission === 'show');
     }
 
     /**
@@ -39,9 +43,11 @@ class ProfessionalPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'Professional' && $permission->permission->permission === 'store');
     }
 
     /**
@@ -51,9 +57,11 @@ class ProfessionalPolicy
      * @param  \App\Models\Professional  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Professional $professional)
+    public function update()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'Professional' && $permission->permission->permission === 'update');
     }
 
     /**
@@ -63,9 +71,11 @@ class ProfessionalPolicy
      * @param  \App\Models\Professional  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Professional $professional)
+    public function delete()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'Professional' && $permission->permission->permission === 'delete');
     }
 
     /**
@@ -75,7 +85,7 @@ class ProfessionalPolicy
      * @param  \App\Models\Professional  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Professional $professional)
+    public function restore()
     {
         //
     }
@@ -87,7 +97,7 @@ class ProfessionalPolicy
      * @param  \App\Models\Professional  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Professional $professional)
+    public function forceDelete()
     {
         //
     }

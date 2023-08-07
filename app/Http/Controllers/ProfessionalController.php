@@ -26,8 +26,7 @@ class ProfessionalController extends Controller
 
     function index()
     {
-        $permission = Admin::permission('Professional', 'index', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('viewAny', Professional::class);
         
         $professionals = Professional::with('carehome.media', 'professionalMedia', 'slots', 'paymentMethods')->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$professionals]);
@@ -35,8 +34,7 @@ class ProfessionalController extends Controller
 
     function store(StoreProfessionalRequest $request)
     {
-        $permission = Admin::permission('Professional', 'store', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('create', Professional::class);
         
         $request = $request->validated();
         
@@ -72,15 +70,14 @@ class ProfessionalController extends Controller
         }
     }
 
-    function update(UpdateProfessionalRequest $request, $professional)
+    function update(UpdateProfessionalRequest $request, $id)
     {
-        $permission = Admin::permission('Professional', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
-        
+        $this->authorize('update', Professional::class);
+
         $request = $request->validated();
         
         try {
-            $professional = Professional::find($professional);
+            $professional = Professional::find($id);
             $professional->update($request);
             return response()->json(['status'=>true, 'response'=>'Record Updated', 'data'=>$professional]);
         } catch (\Throwable $th) {
@@ -90,8 +87,7 @@ class ProfessionalController extends Controller
 
     function show($professional)
     {
-        $permission = Admin::permission('Professional', 'show', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('view', Professional::class);
         
         $professional = Professional::with('carehome.media', 'professionalMedia', 'slots', 'paymentMethods')->find($professional);
         return response()->json(['status'=>true, 'data'=>$professional]);
@@ -99,17 +95,15 @@ class ProfessionalController extends Controller
 
     function destroy($professional)
     {
-        $permission = Admin::permission('Professional', 'delete', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('delete', Professional::class);
         
         return Professional::destroy($professional);
     }
 
     function activate($professional)
     {
-        $permission = Admin::permission('Professional', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
-        
+        $this->authorize('update', Professional::class);
+
         $professional = Professional::find($professional);
         if($professional->status == 0)
         {

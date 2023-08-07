@@ -11,8 +11,7 @@ class PlanController extends Controller
 {
     function index()
     {
-        $permission = Admin::permission('Plan', 'index', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('viewAny', Plan::class);
         
         $plans = Plan::orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$plans]);
@@ -20,8 +19,7 @@ class PlanController extends Controller
 
     function store(StorePlanRequest $request)
     {
-        $permission = Admin::permission('Plan', 'store', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('create', Plan::class);
 
         $request = $request->validated();
         
@@ -35,8 +33,7 @@ class PlanController extends Controller
 
     function update(UpdatePlanRequest $request, $plan)
     {
-        $permission = Admin::permission('Plan', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('update', Plan::class);
 
         $request = $request->validated();
         
@@ -51,8 +48,7 @@ class PlanController extends Controller
 
     function show($plan)
     {
-        $permission = Admin::permission('Plan', 'show', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('view', Plan::class);
 
         $plan = Plan::find($plan);
         return response()->json(['status'=>true, 'data'=>$plan]);
@@ -60,8 +56,7 @@ class PlanController extends Controller
 
     function destroy($plan)
     {
-        $permission = Admin::permission('Plan', 'delete', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('delete', Plan::class);
 
         return Plan::destroy($plan);
     }

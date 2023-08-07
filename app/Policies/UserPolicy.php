@@ -16,21 +16,25 @@ class UserPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'User' && $permission->permission->permission === 'index');
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\User  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, User $model)
+    public function view()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'User' && $permission->permission->permission === 'show');
     }
 
     /**
@@ -41,41 +45,47 @@ class UserPolicy
      */
     public function create()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'User' && $permission->permission->permission === 'store');
     }
 
     /**
      * Determine whether the user can update the model.
      *
-     * @param  \App\Models\Subadmin  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\User  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update($user, User $model)
+    public function update()
     {
-        return $user->id === auth('user')->id();
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'User' && $permission->permission->permission === 'update');
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\User  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, User $model)
+    public function delete()
     {
-        //
+        if(auth()->user()->getTable() != 'subadmins') return true;
+        
+        return auth()->user()->permissions->contains(fn ($permission) => $permission->permission->model === 'User' && $permission->permission->permission === 'delete');
     }
 
     /**
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\User  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, User $model)
+    public function restore()
     {
         //
     }
@@ -84,10 +94,10 @@ class UserPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\User  $professional
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, User $model)
+    public function forceDelete()
     {
         //
     }

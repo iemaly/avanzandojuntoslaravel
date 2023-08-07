@@ -7,8 +7,6 @@ use App\Events\SendUserEmailVerificationEvent;
 use App\Http\Requests\StoreBookBedRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Http\Requests\UserLoginRequest;
-use App\Models\Admin;
 use App\Models\BookBed;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -45,8 +43,7 @@ class UserController extends Controller
      */
     function index()
     {
-        $permission = Admin::permission('User', 'index', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('viewAny', User::class);
         
         $users = User::orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$users]);
@@ -54,8 +51,7 @@ class UserController extends Controller
 
     function show($user)
     {
-        $permission = Admin::permission('User', 'show', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('view', User::class);
         
         $user = User::find($user);
         return response()->json(['status'=>true, 'data'=>$user]);
@@ -68,7 +64,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        $this->authorize('create', User::class);
     }
 
     /**
@@ -79,8 +75,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $permission = Admin::permission('User', 'store', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('create', User::class);
         
         $request = $request->validated();
         
@@ -120,16 +115,22 @@ class UserController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateUserRequest  $request
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateUserRequest $request, User $user)
+    public function update(UpdateUserRequest $request, $id)
     {
-        //
+        $this->authorize('update', User::class);
+
+        $request = $request->validated();
+        
+        try {
+            $request['password'] = bcrypt($request['password']);
+            $user = User::findOrFail($id);
+            $user->update($request);
+            $user['role'] = 'user';
+
+            return response()->json(['status'=>true, 'response'=>'Record Updated', 'data'=>$user]);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
     }
 
     /**
@@ -140,13 +141,12 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $this->authorize('delete', User::class);
     }
 
     function activate($user)
     {
-        $permission = Admin::permission('User', 'update', auth('subadmin_api')->id());
-        if(!$permission['status']) return $permission;
+        $this->authorize('update', User::class);
         
         $user = User::find($user);
         if($user->status == 0)

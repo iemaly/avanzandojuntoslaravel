@@ -41,7 +41,7 @@ class UpdateProfessionalRequest extends FormRequest
             'type' => 'in:RN,CNA,HHA,Amade Ilave,Nutricionista, Trabajadora Social',
             'fname' => 'required',
             'lname' => 'nullable',
-            'email' => 'nullable|email|unique:professionals,email,'.$this->professional,
+            'email' => 'nullable|email|unique:professionals,email,'.$this->id,
             'password' => 'required',
             'image' => 'nullable',
         ];

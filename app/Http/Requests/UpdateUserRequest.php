@@ -2,10 +2,23 @@
 
 namespace App\Http\Requests;
 
+use Elegant\Sanitizer\Laravel\SanitizesInput;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateUserRequest extends FormRequest
 {
+    use SanitizesInput;
+    
+    // public function filters()
+    // {
+    //     return [
+    //         'fname' => 'trim|strip_tags',
+    //         'lname' => 'trim|strip_tags',
+    //         'email' => 'trim|strip_tags',
+    //         'password' => 'trim|strip_tags',
+    //     ];
+    // }
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -13,7 +26,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +37,11 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'fname' => 'required',
+            'lname' => 'nullable',
+            'email' => 'nullable|email|unique:users,email,'.$this->id,
+            'password' => 'required',
+            'image' => 'nullable',
         ];
     }
 }

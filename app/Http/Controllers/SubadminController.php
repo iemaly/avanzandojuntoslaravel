@@ -43,12 +43,12 @@ class SubadminController extends Controller
         }
     }
 
-    function update(UpdateSubadminRequest $request, Subadmin $subadmin)
+    function update(UpdateSubadminRequest $request, $id)
     {
-        $this->authorize('update', $subadmin);
         $request = $request->validated();
 
         try {
+            $subadmin = Subadmin::findOrFail($id);
             $subadmin->update($request);
             return response()->json(['status' => true, 'response' => 'Record Updated', 'data' => $subadmin]);
         } catch (\Throwable $th) {

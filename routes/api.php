@@ -78,10 +78,11 @@ Route::group(['middleware' => 'auth:admin_api', 'prefix' => 'admin'], function (
 });
 
 // USER
-Route::group(['middleware' => 'auth:user_api', 'prefix' => 'user'], function () 
+Route::group(['middleware' => ['auth:user_api'], 'prefix' => 'user'], function () 
 {
     // SUBSCRIPTION
     Route::post('subscriptions/user', [App\Http\Controllers\SubscriptionController::class, 'storeForUser'])->name('subscriptions.user.store');
+    Route::put('users/{id}', [App\Http\Controllers\UserController::class, 'update'])->middleware('authorization');
     
     Route::group(['middleware' => 'subscribed_user'], function () 
     {
@@ -135,7 +136,7 @@ Route::group(['middleware' => 'auth:carehome_api', 'prefix' => 'carehome'], func
         Route::delete('delete/document/{document}', [App\Http\Controllers\CareHomeController::class, 'deleteDocument']);
 
         // PROFILE UPDATE
-        Route::put('update/{carehome}', [App\Http\Controllers\CareHomeController::class, 'update']);
+        Route::put('update/{id}', [App\Http\Controllers\CareHomeController::class, 'update'])->middleware('authorization');
 
         // CONVERSATION
         Route::get('conversations', [App\Http\Controllers\ConversationController::class, 'indexForCarehome']);
@@ -168,7 +169,7 @@ Route::group(['middleware' => 'auth:carehome_api', 'prefix' => 'carehome'], func
 // PROFESSIONAL
 Route::group(['middleware' => 'auth:professional_api', 'prefix' => 'professional'], function () 
 {
-    Route::get('show/{show}', [App\Http\Controllers\ProfessionalController::class, 'show'])->name('professionals.show');
+    Route::get('show/{id}', [App\Http\Controllers\ProfessionalController::class, 'show'])->middleware('authorization')->name('professionals.show');
 
     // PROFILE UPDATE
     Route::post('update/profile_pic', [App\Http\Controllers\ProfessionalController::class, 'profilePicUpdate']);
@@ -179,7 +180,7 @@ Route::group(['middleware' => 'auth:professional_api', 'prefix' => 'professional
     Route::delete('delete/document/{document}', [App\Http\Controllers\ProfessionalController::class, 'deleteDocument']);
     
     // PROFILE UPDATE
-    Route::put('update/{professional}', [App\Http\Controllers\ProfessionalController::class, 'update']);
+    Route::put('update/{id}', [App\Http\Controllers\ProfessionalController::class, 'update'])->middleware('authorization');
     
     // SLOTS
     Route::post('{professional}/slots', [App\Http\Controllers\ProfessionalController::class, 'storeSlot']);
@@ -205,12 +206,12 @@ Route::group(['middleware' => 'auth:professional_api', 'prefix' => 'professional
 // BUSINESS
 Route::group(['middleware' => 'auth:business_api', 'prefix' => 'business'], function () 
 {
-    Route::get('show/{show}', [App\Http\Controllers\BusinessController::class, 'show'])->name('business.show');
+    Route::get('show/{id}', [App\Http\Controllers\BusinessController::class, 'show'])->name('business.show');
 
     // PROFILE UPDATE
     Route::post('update/profile_pic', [App\Http\Controllers\BusinessController::class, 'profilePicUpdate']);
     Route::delete('delete/profile_pic', [App\Http\Controllers\BusinessController::class, 'deleteProfilePic']);
-    Route::put('update/{business}', [App\Http\Controllers\BusinessController::class, 'update']);
+    Route::put('update/{id}', [App\Http\Controllers\BusinessController::class, 'update'])->middleware('authorization');
     
     // POST
     Route::post('posts', [App\Http\Controllers\PostController::class, 'store']);
@@ -230,12 +231,12 @@ Route::group(['middleware' => 'auth:business_api', 'prefix' => 'business'], func
 // SUBADMIN
 Route::group(['middleware' => 'auth:subadmin_api', 'prefix' => 'subadmin'], function () 
 {
-    Route::get('show/{show}', [App\Http\Controllers\SubadminController::class, 'show'])->name('subadmin.show');
+    Route::get('show/{id}', [App\Http\Controllers\SubadminController::class, 'show'])->name('subadmin.show');
 
     // PROFILE UPDATE
     Route::post('update/profile_pic', [App\Http\Controllers\SubadminController::class, 'profilePicUpdate']);
     Route::delete('delete/profile_pic', [App\Http\Controllers\SubadminController::class, 'deleteProfilePic']);
-    Route::put('update/{subadmin}', [App\Http\Controllers\SubadminController::class, 'update']);
+    Route::put('update/{id}', [App\Http\Controllers\SubadminController::class, 'update'])->middleware('authorization');
 
     // CAREHOME
     Route::resource('carehomes', 'App\Http\Controllers\CareHomeController');
