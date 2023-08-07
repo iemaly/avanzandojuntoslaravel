@@ -19,7 +19,7 @@ use App\Models\Bed;
 
 class UserController extends Controller
 {
-    // public $haider;
+    // public $ali;
 
     protected $conversationParticipantController;
     protected $conversationController;
