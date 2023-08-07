@@ -177,7 +177,7 @@ Route::group(['middleware' => 'auth:professional_api', 'prefix' => 'professional
     
     // DOCUMENT
     Route::post('upload/media', [App\Http\Controllers\ProfessionalController::class, 'addMedia']);
-    Route::delete('delete/document/{document}', [App\Http\Controllers\ProfessionalController::class, 'deleteDocument']);
+    Route::delete('delete/document/{professional_document}', [App\Http\Controllers\ProfessionalController::class, 'deleteDocument'])->middleware('check.ownership:professional_document,professional_id');
     
     // PROFILE UPDATE
     Route::put('update/{id}', [App\Http\Controllers\ProfessionalController::class, 'update'])->middleware('authorization');
@@ -206,7 +206,7 @@ Route::group(['middleware' => 'auth:professional_api', 'prefix' => 'professional
 // BUSINESS
 Route::group(['middleware' => 'auth:business_api', 'prefix' => 'business'], function () 
 {
-    Route::get('show/{id}', [App\Http\Controllers\BusinessController::class, 'show'])->name('business.show');
+    Route::get('show/{id}', [App\Http\Controllers\BusinessController::class, 'show'])->middleware('authorization')->name('business.show');
 
     // PROFILE UPDATE
     Route::post('update/profile_pic', [App\Http\Controllers\BusinessController::class, 'profilePicUpdate']);
@@ -216,16 +216,22 @@ Route::group(['middleware' => 'auth:business_api', 'prefix' => 'business'], func
     // POST
     Route::post('posts', [App\Http\Controllers\PostController::class, 'store']);
     Route::get('posts', [App\Http\Controllers\PostController::class, 'index']);
-    Route::get('posts/{post}', [App\Http\Controllers\PostController::class, 'show']);
-    Route::post('post/image/update/{post}', [App\Http\Controllers\PostController::class, 'imageUpdate']);
+    Route::group(['middleware' => 'check.ownership:post,business_id'], function () 
+    {
+        Route::get('posts/{post}', [App\Http\Controllers\PostController::class, 'show']);
+        Route::post('post/image/update/{post}', [App\Http\Controllers\PostController::class, 'imageUpdate']);
+    });
     
     // ADVERTISEMENT
     Route::get('advertisements', [App\Http\Controllers\BusinessController::class, 'businessAdvertisements']);
-    Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementShow']);
     Route::post('advertisements', [App\Http\Controllers\BusinessController::class, 'storeAdvertisement']);
-    Route::post('advertisements/image/update/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementImageUpdate']);
-    Route::delete('advertisements/delete/image/{advertisement}', [App\Http\Controllers\BusinessController::class, 'deleteAdvertisementImage']);
-    Route::put('advertisements/update/{advertisement}', [App\Http\Controllers\BusinessController::class, 'updateAdvertisement']);
+    Route::group(['middleware' => 'check.ownership:advertisement,business_id'], function () 
+    {
+        Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementShow']);
+        Route::post('advertisements/image/update/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementImageUpdate']);
+        Route::delete('advertisements/delete/image/{advertisement}', [App\Http\Controllers\BusinessController::class, 'deleteAdvertisementImage']);
+        Route::put('advertisements/update/{advertisement}', [App\Http\Controllers\BusinessController::class, 'updateAdvertisement']);
+    });
 });
 
 // SUBADMIN
@@ -290,70 +296,74 @@ Route::group(['middleware' => 'auth:subadmin_api', 'prefix' => 'subadmin'], func
     Route::post('carehome/blueprint', [App\Http\Controllers\CareHomeController::class, 'storeBlueprint']);
 });
 
-// UNIVERSAL ROUTES
 
-// AUTH
-Route::post('login', [App\Http\Controllers\AdminController::class, 'login']);
-Route::post('forget', [App\Http\Controllers\AdminController::class, 'forgetPwdProcess']);
-Route::post('reset_password', [App\Http\Controllers\AdminController::class, 'resetPwdProcess']);
+Route::middleware(['throttle:60,1'])->group(function () 
+{
+    // UNIVERSAL ROUTES
 
-// PLANS
-Route::get('plans', [App\Http\Controllers\PlanController::class, 'index']);
-Route::get('plans/{id}', [App\Http\Controllers\PlanController::class, 'show']);
+    // AUTH
+    Route::post('login', [App\Http\Controllers\AdminController::class, 'login']);
+    Route::post('forget', [App\Http\Controllers\AdminController::class, 'forgetPwdProcess']);
+    Route::post('reset_password', [App\Http\Controllers\AdminController::class, 'resetPwdProcess']);
 
-// CAREHOME
-Route::post('carehomes/subscribe', [App\Http\Controllers\SubscriptionController::class, 'storeForCarehome']);
-Route::get('carehome/store', [App\Http\Controllers\CareHomeController::class, 'storeByGet'])->name('carehome.storeByGet');
-Route::get('carehomes', [App\Http\Controllers\CareHomeController::class, 'index']);
-Route::get('carehomes/{id}', [App\Http\Controllers\CareHomeController::class, 'show']);
-Route::post('find_by_email', [App\Http\Controllers\CareHomeController::class, 'findByEmail']);
-// FEATURE
-Route::get('payment_success/{carehome}', [App\Http\Controllers\CareHomeController::class, 'paymentSuccess'])->name('carehome.feature_payment.success');
+    // PLANS
+    Route::get('plans', [App\Http\Controllers\PlanController::class, 'index']);
+    Route::get('plans/{id}', [App\Http\Controllers\PlanController::class, 'show']);
 
-// PROFESSIONAL
-Route::get('professional', [App\Http\Controllers\ProfessionalController::class, 'storeByGet'])->name('professional.store');
-Route::post('professional_by_email', [App\Http\Controllers\ProfessionalController::class, 'proFessionalByEmail'])->name('professional.byEmail');
-// FEATURE
-Route::get('professional/payment_success/{professional}', [App\Http\Controllers\ProfessionalController::class, 'paymentSuccess'])->name('professional.feature_payment.success');
+    // CAREHOME
+    Route::post('carehomes/subscribe', [App\Http\Controllers\SubscriptionController::class, 'storeForCarehome']);
+    Route::get('carehome/store', [App\Http\Controllers\CareHomeController::class, 'storeByGet'])->name('carehome.storeByGet');
+    Route::get('carehomes', [App\Http\Controllers\CareHomeController::class, 'index']);
+    Route::get('carehomes/{id}', [App\Http\Controllers\CareHomeController::class, 'show']);
+    Route::post('find_by_email', [App\Http\Controllers\CareHomeController::class, 'findByEmail']);
+    // FEATURE
+    Route::get('payment_success/{carehome}', [App\Http\Controllers\CareHomeController::class, 'paymentSuccess'])->name('carehome.feature_payment.success');
 
-// SUBSCRIPTION
-Route::resource('subscriptions', 'App\Http\Controllers\SubscriptionController');
-Route::get('subscription/delete_empty', [App\Http\Controllers\SubscriptionController::class, 'deleteEmpty'])->name('subscriptions.delete');
+    // PROFESSIONAL
+    Route::get('professional', [App\Http\Controllers\ProfessionalController::class, 'storeByGet'])->name('professional.store');
+    Route::post('professional_by_email', [App\Http\Controllers\ProfessionalController::class, 'proFessionalByEmail'])->name('professional.byEmail');
+    // FEATURE
+    Route::get('professional/payment_success/{professional}', [App\Http\Controllers\ProfessionalController::class, 'paymentSuccess'])->name('professional.feature_payment.success');
 
-// USER
-Route::post('users', [App\Http\Controllers\UserController::class, 'store'])->name('users.store');
-Route::get('subscription/afterpayuser', [App\Http\Controllers\SubscriptionController::class, 'afterPayForUser'])->name('subscriptions.user.afterpay');
+    // SUBSCRIPTION
+    Route::resource('subscriptions', 'App\Http\Controllers\SubscriptionController');
+    Route::get('subscription/delete_empty', [App\Http\Controllers\SubscriptionController::class, 'deleteEmpty'])->name('subscriptions.delete');
 
-// BUSINESSS
-Route::post('business/subscribe', [App\Http\Controllers\SubscriptionController::class, 'storeForBusiness']);
-Route::get('business/store', [App\Http\Controllers\BusinessController::class, 'storeByGet'])->name('business.storeByGet');
-Route::post('business_by_email', [App\Http\Controllers\BusinessController::class, 'businessByEmail'])->name('business.byEmail');
+    // USER
+    Route::post('users', [App\Http\Controllers\UserController::class, 'store'])->name('users.store');
+    Route::get('subscription/afterpayuser', [App\Http\Controllers\SubscriptionController::class, 'afterPayForUser'])->name('subscriptions.user.afterpay');
 
-// BUSINESS
-Route::get('business', [App\Http\Controllers\BusinessController::class, 'index']);
+    // BUSINESSS
+    Route::post('business/subscribe', [App\Http\Controllers\SubscriptionController::class, 'storeForBusiness']);
+    Route::get('business/store', [App\Http\Controllers\BusinessController::class, 'storeByGet'])->name('business.storeByGet');
+    Route::post('business_by_email', [App\Http\Controllers\BusinessController::class, 'businessByEmail'])->name('business.byEmail');
 
-// BUSINESS POSTS
-Route::get('posts', [App\Http\Controllers\PostController::class, 'indexForAll']);
-Route::get('posts/{post}', [App\Http\Controllers\PostController::class, 'showForAll']);
+    // BUSINESS
+    Route::get('business', [App\Http\Controllers\BusinessController::class, 'index']);
 
-// BUSINESS ADVERTISEMENT
-Route::get('advertisements', [App\Http\Controllers\BusinessController::class, 'advertisementsForUser']);
-Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementShow']);
+    // BUSINESS POSTS
+    Route::get('posts', [App\Http\Controllers\PostController::class, 'indexForAll']);
+    Route::get('posts/{post}', [App\Http\Controllers\PostController::class, 'showForAll']);
 
-// VIDEO CALLING
-Route::post('/create-room', [App\Http\Controllers\VideoCallController::class, 'createRoom']);
-Route::post('/generate-token', [App\Http\Controllers\VideoCallController::class, 'generateToken']);
+    // BUSINESS ADVERTISEMENT
+    Route::get('advertisements', [App\Http\Controllers\BusinessController::class, 'advertisementsForUser']);
+    Route::get('advertisements/{advertisement}', [App\Http\Controllers\BusinessController::class, 'advertisementShow']);
 
-// EMAIL VERIFICATION
-Route::get('verify_email/{role}/{id}', [App\Http\Controllers\AdminController::class, 'emailVerify'])->name('email_verification');
+    // VIDEO CALLING
+    Route::post('/create-room', [App\Http\Controllers\VideoCallController::class, 'createRoom']);
+    Route::post('/generate-token', [App\Http\Controllers\VideoCallController::class, 'generateToken']);
 
-// COUNT
-Route::get('dashboard', [App\Http\Controllers\AdminController::class, 'dashboard']);
-Route::get('is_viewed', [App\Http\Controllers\AdminController::class, 'isViewed']);
-Route::post('is_viewed/{type}', [App\Http\Controllers\AdminController::class, 'isViewedUpdate']);
+    // EMAIL VERIFICATION
+    Route::get('verify_email/{role}/{id}', [App\Http\Controllers\AdminController::class, 'emailVerify'])->name('email_verification');
 
-Route::get('buildings', [App\Http\Controllers\BuildingController::class, 'index']);
+    // COUNT
+    Route::get('dashboard', [App\Http\Controllers\AdminController::class, 'dashboard']);
+    Route::get('is_viewed', [App\Http\Controllers\AdminController::class, 'isViewed']);
+    Route::post('is_viewed/{type}', [App\Http\Controllers\AdminController::class, 'isViewedUpdate']);
 
-// TRANSLATOR
-Route::get('translations', [App\Http\Controllers\TranslatorController::class, 'index']);
-Route::get('translations/{id}', [App\Http\Controllers\TranslatorController::class, 'show']);
+    Route::get('buildings', [App\Http\Controllers\BuildingController::class, 'index']);
+
+    // TRANSLATOR
+    Route::get('translations', [App\Http\Controllers\TranslatorController::class, 'index']);
+    Route::get('translations/{id}', [App\Http\Controllers\TranslatorController::class, 'show']);
+});
