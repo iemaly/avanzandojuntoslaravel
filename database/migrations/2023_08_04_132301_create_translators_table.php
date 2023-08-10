@@ -20,6 +20,10 @@ return new class extends Migration
             $table->longText('es')->nullable();
             $table->timestamps();
         });
+
+        Schema::table('translators', function (Blueprint $table) {
+            $table->index('title');
+        });
     }
 
     /**

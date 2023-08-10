@@ -367,4 +367,7 @@ Route::middleware(['throttle:60,1'])->group(function ()
     Route::get('translations', [App\Http\Controllers\TranslatorController::class, 'index']);
     Route::get('translations/{id}', [App\Http\Controllers\TranslatorController::class, 'show']);
     Route::get('sorted_translations', [App\Http\Controllers\TranslatorController::class, 'sorted']);
+    
+    // CONTACT MAIL
+    Route::post('contact_mail', [App\Http\Controllers\UserController::class, 'contactMail']);
 });

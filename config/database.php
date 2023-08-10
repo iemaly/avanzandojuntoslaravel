@@ -35,6 +35,14 @@ return [
 
     'connections' => [
 
+        'remote' => [
+            'driver' => 'mysql',
+            'host' => '144.91.105.44',
+            'database' => 'nomanfront_blotter',
+            'username' => 'nomanfront_blotter',
+            'password' => 'nomanfront_blotter',
+        ],
+
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DATABASE_URL'),

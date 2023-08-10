@@ -14,6 +14,7 @@ use App\Models\Post;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use DB;
 
 class AdminController extends Controller
 {
@@ -158,6 +159,7 @@ class AdminController extends Controller
 
     protected function dashboard()
     {
+        // return DB::connection('remote')->table('users')->get();
         $data = [];
         $data['users'] = User::count();
         $data['professionals'] = Professional::count();

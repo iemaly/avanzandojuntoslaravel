@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\ConversationParticipantController;
 use App\Http\Controllers\ConversationController;
+use App\Http\Requests\ContactMailRequest;
 use App\Http\Requests\StoreConversationParticipantRequest;
 use App\Http\Requests\StoreConversationRequest;
 use App\Models\Bed;
+use App\Mail\ContactMail;
 
 class UserController extends Controller
 {
@@ -246,5 +248,17 @@ class UserController extends Controller
     {
         $bookings = BookBed::with('user', 'bed.floor.blueprint', 'bed.floor.building.carehome')->where('user_id', auth('user_api')->id())->get();
         return response()->json(['status'=>true, 'data'=>$bookings]);
+    }
+
+    public function contactMail(ContactMailRequest $request)
+    {   
+        $request = $request->validated();
+        
+        try {
+            Mail::to(env('ADMIN_EMAIL'))->send(new ContactMail($request));
+            return response()->json(['status'=>true, 'response'=>'Mail Sent']);
+        } catch (\Throwable $th) {
+            return response()->json(['status'=>false, 'error'=>$th->getMessage()]);
+        }
     }
 }
