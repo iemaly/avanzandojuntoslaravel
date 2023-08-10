@@ -366,4 +366,5 @@ Route::middleware(['throttle:60,1'])->group(function ()
     // TRANSLATOR
     Route::get('translations', [App\Http\Controllers\TranslatorController::class, 'index']);
     Route::get('translations/{id}', [App\Http\Controllers\TranslatorController::class, 'show']);
+    Route::get('sorted_translations', [App\Http\Controllers\TranslatorController::class, 'sorted']);
 });

@@ -18,6 +18,22 @@ class TranslatorController extends Controller
         return response()->json(['status' => true, 'data' => $translations]);
     }
 
+    function sorted()
+    {
+        $translations = Translator::orderBy('id', 'desc')->get();
+        $langParam = request()->lang;
+
+        $translatedData = [];
+
+        foreach ($translations as $translation) 
+        {
+            if (isset($translation[$langParam])) {
+                $translatedData[$translation['title']] = $translation[$langParam];
+            }
+        }
+        return response()->json(['status' => true, $langParam => $translatedData]);
+    }
+
     function store(StoreTranslatorRequest $request)
     {
         $request = $request->validated();

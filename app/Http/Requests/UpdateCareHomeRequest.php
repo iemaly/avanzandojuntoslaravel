@@ -43,7 +43,7 @@ class UpdateCareHomeRequest extends FormRequest
             'address' => 'nullable',
             'town' => 'nullable',
             'telephone' => 'nullable',
-            'email' => 'nullable|email|unique:care_homes,email,'.$this->id,
+            'email' => 'nullable|email|unique:care_homes,email,'.$this->carehome,
             'license' => 'nullable',
             'license_status' => 'nullable',
             'ability' => 'nullable',

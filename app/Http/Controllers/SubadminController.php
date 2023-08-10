@@ -35,7 +35,7 @@ class SubadminController extends Controller
                 $request['image']->move(public_path('uploads/subadmin/images'), $imageName);
                 $request['image'] = $imageName;
             }
-            if($request['image']=='undefined') unset($request['image']);
+            if(isset($request['image']) && $request['image']=='undefined') unset($request['image']);
             $subadmin = Subadmin::create($request);
             return response()->json(['status' => true, 'response' => 'Record Created', 'data' => $subadmin]);
         } catch (\Throwable $th) {

@@ -56,13 +56,13 @@ class Kernel extends HttpKernel
      * @var array<string, class-string|string>
      */
     protected $routeMiddleware = [
-        'check.ownership' => \App\Http\Middleware\CheckOwnership::class,
-        'authorization' => \App\Http\Middleware\AuthorizationMiddleware::class,
         'subscribed_carehome' => \App\Http\Middleware\isSubscribedCarehome::class,
         'subscribed_user' => \App\Http\Middleware\UserSubscribed::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
+        'check.ownership' => \App\Http\Middleware\CheckOwnership::class,
+        'authorization' => \App\Http\Middleware\AuthorizationMiddleware::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
