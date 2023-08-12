@@ -296,7 +296,6 @@ Route::group(['middleware' => 'auth:subadmin_api', 'prefix' => 'subadmin'], func
     Route::post('carehome/blueprint', [App\Http\Controllers\CareHomeController::class, 'storeBlueprint']);
 });
 
-
 Route::middleware(['throttle:60,1'])->group(function () 
 {
     // UNIVERSAL ROUTES

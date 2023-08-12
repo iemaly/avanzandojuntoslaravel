@@ -37,7 +37,7 @@ class StoreProfessionalRequest extends FormRequest
     public function rules()
     {
         return [
-            'carehome_id' => 'required|exists:care_homes,id',
+            // 'carehome_id' => 'required|exists:care_homes,id',
             'type' => 'in:RN,CNA,HHA,Amade Ilave,Nutricionista, Trabajadora Social',
             'fname' => 'required',
             'lname' => 'nullable',

@@ -37,7 +37,7 @@ class UpdateProfessionalRequest extends FormRequest
     public function rules()
     {
         return [
-            'carehome_id' => 'required|exists:professionals,id',
+            // 'carehome_id' => 'required|exists:professionals,id',
             'type' => 'in:RN,CNA,HHA,Amade Ilave,Nutricionista, Trabajadora Social',
             'fname' => 'required',
             'lname' => 'nullable',

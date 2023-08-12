@@ -28,7 +28,7 @@ class ProfessionalController extends Controller
     {
         $this->authorize('viewAny', Professional::class);
         
-        $professionals = Professional::with('carehome.media', 'professionalMedia', 'slots', 'paymentMethods')->orderBy('id', 'desc')->get();
+        $professionals = Professional::with('professionalMedia', 'slots', 'paymentMethods')->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$professionals]);
     }
 
@@ -89,7 +89,7 @@ class ProfessionalController extends Controller
     {
         $this->authorize('view', Professional::class);
         
-        $professional = Professional::with('carehome.media', 'professionalMedia', 'slots', 'paymentMethods')->find($professional);
+        $professional = Professional::with('professionalMedia', 'slots', 'paymentMethods')->find($professional);
         return response()->json(['status'=>true, 'data'=>$professional]);
     }
 
