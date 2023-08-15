@@ -3,7 +3,7 @@
 /public/hot
 /public/storage
 /storage/*.key
-/vendor
+/vendor/*
 !vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/FreshCommand.php
 .env
 .env.backup
