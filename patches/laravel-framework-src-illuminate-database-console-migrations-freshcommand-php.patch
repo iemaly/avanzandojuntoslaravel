@@ -1,0 +1,22 @@
+--- /dev/null
++++ ../src/Illuminate/Database/Console/Migrations/FreshCommand.php
+@@ -41,9 +41,6 @@
+ 
+         $this->newLine();
+ 
+-        // BACKUP FOR TRANSLATOR TABLE
+-        $this->call('iseed', ['tables' => 'translators']);
+-
+         $this->components->task('Dropping all tables', fn () => $this->callSilent('db:wipe', array_filter([
+             '--database' => $database,
+             '--drop-views' => $this->option('drop-views'),
+@@ -71,9 +68,6 @@
+         if ($this->needsSeeding()) {
+             $this->runSeeder($database);
+         }
+-
+-        // PASSPORT INSTALL
+-        $this->call('passport:install');
+ 
+         return 0;
+     }
