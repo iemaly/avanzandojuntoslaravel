@@ -4,7 +4,7 @@
 /public/storage
 /storage/*.key
 /vendor
-!vendor/laravel/framework/src/Illuminate/Database/Console/Migrations
+!vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/FreshCommand.php
 .env
 .env.backup
 .env.production

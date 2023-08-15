@@ -55,6 +55,13 @@ class Subadmin extends Authenticatable
         return $this->morphMany(User::class, 'added_by');
     }
 
+    public function hasPermission($model, $action)
+    {
+        return $this->permissions->contains(function ($permission) use ($model, $action) {
+            return $permission->permission->model === $model && $permission->permission->permission === $action;
+        });
+    }
+
     // ACCESSOR
     protected function image(): Attribute
     {

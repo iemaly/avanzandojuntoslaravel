@@ -58,6 +58,7 @@ class SubadminController extends Controller
 
     function show($subadmin)
     {
+        // return auth()->user()->hasPermission('CareHome', 'show');
         $subadmin = Subadmin::find($subadmin);
         return response()->json(['status' => true, 'data' => $subadmin]);
     }
