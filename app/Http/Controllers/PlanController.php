@@ -11,7 +11,7 @@ class PlanController extends Controller
 {
     function index()
     {
-        $this->authorize('viewAny', Plan::class);
+        if(auth()->check()) $this->authorize('viewAny', Plan::class);
         
         $plans = Plan::orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$plans]);
@@ -19,7 +19,7 @@ class PlanController extends Controller
 
     function store(StorePlanRequest $request)
     {
-        $this->authorize('create', Plan::class);
+        if(auth()->check()) $this->authorize('create', Plan::class);
 
         $request = $request->validated();
         
@@ -33,7 +33,7 @@ class PlanController extends Controller
 
     function update(UpdatePlanRequest $request, $plan)
     {
-        $this->authorize('update', Plan::class);
+        if(auth()->check()) $this->authorize('update', Plan::class);
 
         $request = $request->validated();
         
@@ -48,7 +48,7 @@ class PlanController extends Controller
 
     function show($plan)
     {
-        $this->authorize('view', Plan::class);
+        if(auth()->check()) $this->authorize('view', Plan::class);
 
         $plan = Plan::find($plan);
         return response()->json(['status'=>true, 'data'=>$plan]);
@@ -56,7 +56,7 @@ class PlanController extends Controller
 
     function destroy($plan)
     {
-        $this->authorize('delete', Plan::class);
+        if(auth()->check()) $this->authorize('delete', Plan::class);
 
         return Plan::destroy($plan);
     }

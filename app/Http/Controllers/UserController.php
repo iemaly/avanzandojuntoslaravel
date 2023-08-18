@@ -46,7 +46,7 @@ class UserController extends Controller
      */
     function index()
     {
-        $this->authorize('viewAny', User::class);
+        if(auth()->check()) $this->authorize('viewAny', User::class);
         
         $users = User::orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$users]);
@@ -54,7 +54,7 @@ class UserController extends Controller
 
     function show($user)
     {
-        $this->authorize('view', User::class);
+        if(auth()->check()) $this->authorize('view', User::class);
         
         $user = User::find($user);
         return response()->json(['status'=>true, 'data'=>$user]);
@@ -67,7 +67,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        $this->authorize('create', User::class);
+        if(auth()->check()) $this->authorize('create', User::class);
     }
 
     /**
@@ -78,7 +78,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        $this->authorize('create', User::class);
+        if(auth()->check()) $this->authorize('create', User::class);
         
         $request = $request->validated();
         
@@ -120,7 +120,7 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, $id)
     {
-        $this->authorize('update', User::class);
+        if(auth()->check()) $this->authorize('update', User::class);
 
         $request = $request->validated();
         
@@ -144,12 +144,12 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $this->authorize('delete', User::class);
+        if(auth()->check()) $this->authorize('delete', User::class);
     }
 
     function activate($user)
     {
-        $this->authorize('update', User::class);
+        if(auth()->check()) $this->authorize('update', User::class);
         
         $user = User::find($user);
         if($user->status == 0)

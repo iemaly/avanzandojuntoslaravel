@@ -26,7 +26,7 @@ class ProfessionalController extends Controller
 
     function index()
     {
-        $this->authorize('viewAny', Professional::class);
+        if(auth()->check()) $this->authorize('viewAny', Professional::class);
         
         $professionals = Professional::with('professionalMedia', 'slots', 'paymentMethods')->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$professionals]);
@@ -34,7 +34,7 @@ class ProfessionalController extends Controller
 
     function store(StoreProfessionalRequest $request)
     {
-        $this->authorize('create', Professional::class);
+        if(auth()->check()) $this->authorize('create', Professional::class);
         
         $request = $request->validated();
         
@@ -72,7 +72,7 @@ class ProfessionalController extends Controller
 
     function update(UpdateProfessionalRequest $request, $id)
     {
-        $this->authorize('update', Professional::class);
+        if(auth()->check()) $this->authorize('update', Professional::class);
 
         $request = $request->validated();
         
@@ -87,7 +87,7 @@ class ProfessionalController extends Controller
 
     function show($professional)
     {
-        $this->authorize('view', Professional::class);
+        if(auth()->check()) $this->authorize('view', Professional::class);
         
         $professional = Professional::with('professionalMedia', 'slots', 'paymentMethods')->find($professional);
         return response()->json(['status'=>true, 'data'=>$professional]);
@@ -95,14 +95,14 @@ class ProfessionalController extends Controller
 
     function destroy($professional)
     {
-        $this->authorize('delete', Professional::class);
+        if(auth()->check()) $this->authorize('delete', Professional::class);
         
         return Professional::destroy($professional);
     }
 
     function activate($professional)
     {
-        $this->authorize('update', Professional::class);
+        if(auth()->check()) $this->authorize('update', Professional::class);
 
         $professional = Professional::find($professional);
         if($professional->status == 0)

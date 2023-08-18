@@ -27,7 +27,7 @@ class CareHomeController extends Controller
 
     function index()
     {
-        $this->authorize('viewAny', CareHome::class);
+        if(auth()->check()) $this->authorize('viewAny', CareHome::class);
 
         $carehomes = CareHome::with('media', 'buildings.floors.blueprint', 'buildings.floors.beds')->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$carehomes]);
@@ -35,7 +35,7 @@ class CareHomeController extends Controller
 
     function store(StoreCareHomeRequest $request)
     {
-        $this->authorize('create', CareHome::class);
+        if(auth()->check()) $this->authorize('create', CareHome::class);
 
         $request = $request->validated();
         
@@ -68,7 +68,7 @@ class CareHomeController extends Controller
 
     function update(UpdateCareHomeRequest $request, $id)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
 
         $request = $request->validated();
         
@@ -85,7 +85,7 @@ class CareHomeController extends Controller
 
     function show($carehome)
     {
-        $this->authorize('view', CareHome::class);
+        if(auth()->check()) $this->authorize('view', CareHome::class);
 
         $carehome = Carehome::with('media', 'buildings.floors.blueprint', 'buildings.floors.beds')->find($carehome);
         if($carehome!=null)
@@ -101,14 +101,14 @@ class CareHomeController extends Controller
 
     function destroy($carehome)
     {
-        $this->authorize('delete', CareHome::class);
+        if(auth()->check()) $this->authorize('delete', CareHome::class);
 
         return CareHome::destroy($carehome);
     }
 
     function bulk()
     {
-        $this->authorize('create', CareHome::class);
+        if(auth()->check()) $this->authorize('create', CareHome::class);
         
         $response = (new Carehome())->import(request()->sheet);
         return response()->json(['status'=>$response['status'], 'message'=>$response['status']===true?"Sheet Imported":$response['error']]);
@@ -116,7 +116,7 @@ class CareHomeController extends Controller
 
     function activate($carehome)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
                 
         $carehome = CareHome::find($carehome);
         if($carehome->status == 0)
@@ -262,7 +262,7 @@ class CareHomeController extends Controller
     // BLUEPRINT WORK
     function approveBlueprint($blueprint)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
         
         $blueprint = CareHomeMedia::with('carehome')->find($blueprint);
         if($blueprint->type=='blueprint')
@@ -288,7 +288,7 @@ class CareHomeController extends Controller
 
     function refuseBlueprint($blueprint)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
         
         $blueprint = CareHomeMedia::with('carehome')->find($blueprint);
         if($blueprint->type=='blueprint')
@@ -301,7 +301,7 @@ class CareHomeController extends Controller
 
     function storeBuilding(StoreBuildingRequest $request)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
         
         $request = $request->validated();
         
@@ -316,7 +316,7 @@ class CareHomeController extends Controller
 
     function storeFloor(StoreFloorRequest $request)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
 
         $request = $request->validated();
         $numberOfFloors = $request['number_of_floors'];
@@ -337,7 +337,7 @@ class CareHomeController extends Controller
 
     function storeBed(StoreBedRequest $request)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
 
         $request = $request->validated();
         $numberOfBeds = $request['number_of_beds'];
@@ -358,7 +358,7 @@ class CareHomeController extends Controller
 
     function storeSingleFloor($building)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
    
         try {
             $building = Building::with('floors')->find($building);
@@ -382,7 +382,7 @@ class CareHomeController extends Controller
 
     function storeSingleBed($floor)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
 
         try {
             $floor = Floor::with('beds')->find($floor);
@@ -406,28 +406,28 @@ class CareHomeController extends Controller
 
     function destroyBuilding($building)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
 
         return Building::destroy($building);
     }
 
     function destroyFloor($floor)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
 
         return Floor::destroy($floor);
     }
 
     function destroyBed($bed)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
 
         return Bed::destroy($bed);
     }
 
     function buildings()
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
 
         $carehomeId = request()->carehome_id??auth('carehome_api')->id();
         $buildings = Building::with('carehome')->where('carehome_id', $carehomeId)->orderBy('id', 'desc')->get();
@@ -436,7 +436,7 @@ class CareHomeController extends Controller
 
     function floors($building)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
 
         $floors = Floor::where('building_id', $building)->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$floors]);
@@ -444,7 +444,7 @@ class CareHomeController extends Controller
 
     function beds($floor)
     {
-        $this->authorize('update', CareHome::class);
+        if(auth()->check()) $this->authorize('update', CareHome::class);
 
         $beds = Bed::with('floor.building')->where('floor_id', $floor)->orderBy('id', 'desc')->get();
         return response()->json(['status'=>true, 'data'=>$beds]);

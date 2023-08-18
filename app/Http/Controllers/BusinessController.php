@@ -21,7 +21,7 @@ class BusinessController extends Controller
 
     function index()
     {
-        $this->authorize('viewAny', Business::class);
+        if(auth()->check()) $this->authorize('viewAny', Business::class);
    
         $businessId = request()->business_id;
         $business = Business::with('advertisements')->orderBy('id', 'desc')->get();
@@ -31,7 +31,7 @@ class BusinessController extends Controller
 
     function store(StoreBusinessRequest $request)
     {
-        $this->authorize('create', Business::class);
+        if(auth()->check()) $this->authorize('create', Business::class);
         
         $request = $request->validated();
 
@@ -68,7 +68,7 @@ class BusinessController extends Controller
 
     function update(UpdateBusinessRequest $request, $id)
     {
-        $this->authorize('update', Business::class);
+        if(auth()->check()) $this->authorize('update', Business::class);
         
         $request = $request->validated();
 
@@ -83,7 +83,7 @@ class BusinessController extends Controller
 
     function show($business)
     {
-        $this->authorize('view', Business::class);
+        if(auth()->check()) $this->authorize('view', Business::class);
         
         $business = Business::find($business);
         return response()->json(['status' => true, 'data' => $business]);
@@ -91,14 +91,14 @@ class BusinessController extends Controller
 
     function destroy($business)
     {
-        $this->authorize('delete', Business::class);
+        if(auth()->check()) $this->authorize('delete', Business::class);
         
         return Business::destroy($business);
     }
 
     function activate($business)
     {
-        $this->authorize('update', Business::class);
+        if(auth()->check()) $this->authorize('update', Business::class);
 
         $business = Business::find($business);
         if($business->status == 0)
@@ -162,7 +162,7 @@ class BusinessController extends Controller
     // ADVERTISEMENT
     function storeAdvertisement(StoreAdvertisementRequest $request)
     {
-        $this->authorize('create', Advertisement::class);
+        if(auth()->check()) $this->authorize('create', Advertisement::class);
         
         $request = $request->validated();
 
@@ -221,7 +221,7 @@ class BusinessController extends Controller
 
     function updateAdvertisement(UpdateAdvertisementRequest $request, $advertisement)
     {
-        $this->authorize('update', Advertisement::class);
+        if(auth()->check()) $this->authorize('update', Advertisement::class);
         
         $request = $request->validated();
 
@@ -236,7 +236,7 @@ class BusinessController extends Controller
 
     function advertisements()
     {
-        $this->authorize('viewAny', Advertisement::class);
+        if(auth()->check()) $this->authorize('viewAny', Advertisement::class);
         
         $advertisements = Advertisement::with('business')->orderBy('id', 'desc')->get();
         return response()->json(['status' => true, 'data' => $advertisements]);
@@ -257,7 +257,7 @@ class BusinessController extends Controller
 
     function advertisementShow($advertisement)
     {
-        $this->authorize('view', Advertisement::class);
+        if(auth()->check()) $this->authorize('view', Advertisement::class);
         
         $advertisement = Advertisement::with('business')->find($advertisement);
         return response()->json(['status' => true, 'data' => $advertisement]);
@@ -265,14 +265,14 @@ class BusinessController extends Controller
 
     function destroyAdvertisement($advertisement)
     {
-        $this->authorize('delete', Advertisement::class);
+        if(auth()->check()) $this->authorize('delete', Advertisement::class);
         
         return Advertisement::destroy($advertisement);
     }
 
     function approveAdvertisement($Advertisement)
     {
-        $this->authorize('update', Advertisement::class);
+        if(auth()->check()) $this->authorize('update', Advertisement::class);
         
         $Advertisement = Advertisement::with('business')->find($Advertisement);
         if ($Advertisement->status==0) 
@@ -291,7 +291,7 @@ class BusinessController extends Controller
 
     function refuseAdvertisement($Advertisement)
     {
-        $this->authorize('update', Advertisement::class);
+        if(auth()->check()) $this->authorize('update', Advertisement::class);
         
         $Advertisement = Advertisement::with('business')->find($Advertisement);
         if ($Advertisement->status==1) $Advertisement->update(['status'=>0]);
@@ -300,7 +300,7 @@ class BusinessController extends Controller
 
     function featureUnfeature($advertisement)
     {
-        $this->authorize('update', Advertisement::class);
+        if(auth()->check()) $this->authorize('update', Advertisement::class);
         
         $advertisement = Advertisement::find($advertisement);
         if($advertisement->is_featured == 0)
