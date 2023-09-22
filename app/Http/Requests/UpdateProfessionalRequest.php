@@ -42,7 +42,7 @@ class UpdateProfessionalRequest extends FormRequest
             'fname' => 'required',
             'lname' => 'nullable',
             'email' => 'nullable|email|unique:professionals,email,'.$this->id,
-            'password' => 'required',
+            'password' => 'nullable',
             'image' => 'nullable',
         ];
     }

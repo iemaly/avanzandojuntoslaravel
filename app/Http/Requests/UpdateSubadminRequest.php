@@ -40,7 +40,7 @@ class UpdateSubadminRequest extends FormRequest
             'fname' => 'required',
             'lname' => 'nullable',
             'email' => 'nullable|email|unique:subadmins,email,'.$this->id,
-            'password' => 'required',
+            'password' => 'nullable',
             'image' => 'nullable',
         ];
     }

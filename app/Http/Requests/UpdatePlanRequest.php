@@ -37,7 +37,7 @@ class UpdatePlanRequest extends FormRequest
     public function rules()
     {
         return [
-            'professional_type' => 'nullable|in:RN,CNA,HHA,Amade Ilave,Nutricionista, Trabajadora Social',
+            'professional_type' => 'nullable|in:RN,CNA,HHA,Amade Ilave,Nutricionista,Trabajadora Social',
             'type' => 'in:Professional,Business,User,Carehome',
             'plan_type' => 'in:Signup,Feature',
             'professional_type' => 'nullable',

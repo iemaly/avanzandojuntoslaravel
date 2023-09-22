@@ -14,7 +14,6 @@ use App\Models\Post;
 use App\Models\Subscription;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
-use DB;
 
 class AdminController extends Controller
 {

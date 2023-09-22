@@ -40,7 +40,7 @@ class UpdateUserRequest extends FormRequest
             'fname' => 'required',
             'lname' => 'nullable',
             'email' => 'nullable|email|unique:users,email,'.$this->id,
-            'password' => 'required',
+            'password' => 'nullable',
             'image' => 'nullable',
         ];
     }
