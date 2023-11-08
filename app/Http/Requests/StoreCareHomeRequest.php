@@ -46,7 +46,7 @@ class StoreCareHomeRequest extends FormRequest
             'license' => 'nullable',
             'license_status' => 'nullable',
             'ability' => 'nullable',
-            'image' => 'nullable|file',
+            'image' => 'nullable',
             'password' => 'nullable',
             'pricing' => 'nullable',
         ];

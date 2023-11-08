@@ -272,8 +272,11 @@ class CareHomeController extends Controller
                 $blueprint->update(['status'=>1]);
 
                 $floor = Floor::where('blueprint_id', $blueprint->id)->first();
-                $floor->update(['status'=>1]);
-                $bed = Bed::where('floor_id', $floor->id)->update(['status'=>1]);
+                if($floor)
+                {
+                    $floor->update(['status'=>1]);
+                    $bed = Bed::where('floor_id', $floor->id)->update(['status'=>1]);
+                } 
                 
                 Mail::raw("Blueprint Approved.", function ($message) use ($blueprint) 
                 {
@@ -293,8 +296,9 @@ class CareHomeController extends Controller
         $blueprint = CareHomeMedia::with('carehome')->find($blueprint);
         if($blueprint->type=='blueprint')
         {
-            if ($blueprint->status==1) $blueprint->update(['status'=>0]);
-                return response()->json(['status'=>true, 'response'=>"Blueprint refused"]);
+            // if ($blueprint->status==1) $blueprint->update(['status'=>0]);
+            $blueprint->delete();
+            return response()->json(['status'=>true, 'response'=>"Blueprint refused"]);
         }
         else return response()->json(['status'=>false, 'response'=>"Incorrect Document Type"]);
     }
